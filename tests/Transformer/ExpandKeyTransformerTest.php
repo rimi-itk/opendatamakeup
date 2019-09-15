@@ -10,31 +10,11 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\Exception\AbstractTransformerException;
 use App\Transformer\ExpandKeyTransformer;
 
 class ExpandKeyTransformerTest extends AbstractTransformerTest
 {
-    /**
-     * @dataProvider dataProvider
-     *
-     * @param array                              $configuration
-     * @param array                              $input
-     * @param array|AbstractTransformerException $expected
-     */
-    public function testTransform(array $configuration, array $input, $expected): void
-    {
-        $transformer = new ExpandKeyTransformer();
-        $transformer->setConfiguration($configuration);
-
-        if ($expected instanceof AbstractTransformerException) {
-            $this->expectExceptionObject($expected);
-        }
-
-        $actual = $transformer->transform($input);
-
-        $this->assertEquals($expected, $actual);
-    }
+    protected static $class = ExpandKeyTransformer::class;
 
     public function dataProvider(): array
     {

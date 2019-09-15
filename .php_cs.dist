@@ -17,6 +17,7 @@ return PhpCsFixer\Config::create()
   ->setRules([
     '@Symfony' => true,
     '@Symfony:risky' => true,
+    '@DoctrineAnnotation' => true,
     'array_syntax' => ['syntax' => 'short'],
     'header_comment' => ['header' => $header],
     'list_syntax' => ['syntax' => 'short'],

@@ -10,32 +10,13 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\Exception\AbstractTransformerException;
-use App\Transformer\Exception\InvalidInputException;
+use App\Data\Table;
+use App\Transformer\Exception\InvalidKeyException;
 use App\Transformer\RemoveKeysTransformer;
 
 class RemoveKeysTransformerTest extends AbstractTransformerTest
 {
-    /**
-     * @dataProvider dataProvider
-     *
-     * @param array                              $configuration
-     * @param array                              $input
-     * @param array|AbstractTransformerException $expected
-     */
-    public function testTransform(array $configuration, array $input, $expected)
-    {
-        $transformer = new RemoveKeysTransformer();
-        $transformer->setConfiguration($configuration);
-
-        if ($expected instanceof AbstractTransformerException) {
-            $this->expectExceptionObject($expected);
-        }
-
-        $actual = $transformer->transform($input);
-
-        $this->assertEquals($expected, $actual);
-    }
+    protected static $class = RemoveKeysTransformer::class;
 
     public function dataProvider(): array
     {
@@ -44,26 +25,25 @@ class RemoveKeysTransformerTest extends AbstractTransformerTest
                 [
                     'keys' => ['birthday'],
                 ],
-                [
-                    [
-                        'name' => 'Mikkel',
-                    ],
-                ],
-                new InvalidInputException('invalid key: birthday'),
+                Table::createFromCSV([
+                    'name',
+                    'Mikkel',
+                ]),
+                new InvalidKeyException('invalid keys: birthday'),
             ],
+
             [
                 [
                     'keys' => ['birthday'],
                 ],
-                [
-                    [
-                        'name' => 'Mikkel',
-                        'birthday' => '1975-05-23',
-                    ],
-                ],
-                [
-                    ['name' => 'Mikkel'],
-                ],
+                Table::createFromCSV([
+                    'name,birthday',
+                    'Mikkel,1975-05-23',
+                ]),
+                Table::createFromCSV([
+                    'name',
+                    'Mikkel',
+                ]),
             ],
         ];
     }

@@ -1,0 +1,3 @@
+app:
+    transformers:
+        remove_keys: App\Transformer\RemoveKeysTransformer

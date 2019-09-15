@@ -10,31 +10,11 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\Exception\AbstractTransformerException;
 use App\Transformer\ReplaceTransformer;
 
 class ReplaceTransformerTest extends AbstractTransformerTest
 {
-    /**
-     * @dataProvider dataProvider
-     *
-     * @param array                              $configuration
-     * @param array                              $input
-     * @param array|AbstractTransformerException $expected
-     */
-    public function testTransform(array $configuration, array $input, $expected)
-    {
-        $transformer = new ReplaceTransformer();
-        $transformer->setConfiguration($configuration);
-
-        if ($expected instanceof AbstractTransformerException) {
-            $this->expectExceptionObject($expected);
-        }
-
-        $actual = $transformer->transform($input);
-
-        $this->assertEquals($expected, $actual);
-    }
+    protected static $class = ReplaceTransformer::class;
 
     public function dataProvider(): array
     {

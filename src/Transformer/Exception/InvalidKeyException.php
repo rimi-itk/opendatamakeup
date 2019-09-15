@@ -10,8 +10,6 @@
 
 namespace App\Transformer\Exception;
 
-use Throwable;
-
 class InvalidKeyException extends AbstractTransformerException
 {
     /**
@@ -23,12 +21,6 @@ class InvalidKeyException extends AbstractTransformerException
      * @var array
      */
     protected $value;
-
-    public function __construct($key, $value, $code = 0, Throwable $previous = null)
-    {
-        $message = 'invalid key: '.$key;
-        parent::__construct($message, $code, $previous);
-    }
 
     /**
      * @return string
