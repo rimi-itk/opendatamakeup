@@ -1,3 +1,7 @@
 app:
     transformers:
+        calculate: App\Transformer\CalculateTransformer
+        expand_key: ExpandKeyTransformer
+        filter: FilterTransformer
         remove_keys: App\Transformer\RemoveKeysTransformer
+        replace: App\Transformer\ReplaceTransformer

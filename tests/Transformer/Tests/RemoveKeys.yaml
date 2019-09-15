@@ -1,0 +1,17 @@
+input: &input |
+  id,name,birthday
+  1,Mikkel,23-05-95
+  2,James Hetfield,03-08-63
+
+tests:
+  - input: *input
+    transforms:
+      - type: remove_keys
+        configuration:
+          keys: ['birthday']
+        expected: |
+          id,name
+          1,Mikkel
+          2,James Hetfield
+
+

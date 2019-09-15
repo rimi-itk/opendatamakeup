@@ -175,7 +175,7 @@ abstract class AbstractTransformer
         $keys = explode('.', $propertyPath);
         foreach ($keys as $key) {
             if (!\array_key_exists($key, $value)) {
-                throw (new InvalidKeyException())
+                throw (new InvalidKeyException($key))
                     ->setKey($key)
                     ->setValue($value);
             }

@@ -1,0 +1,9 @@
+input: test-000.in.csv
+
+transforms:
+    -
+        name: remove_keys
+        configuration:
+            keys: ['birthday']
+
+expected: test-000.out.csv

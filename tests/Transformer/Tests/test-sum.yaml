@@ -1,0 +1,20 @@
+input: test-number.in.csv
+
+transforms:
+    -
+        name: calculate
+        configuration:
+            name: sum of a and b
+            left: a
+            operator: '+'
+            right: b
+
+    -
+        name: calculate
+        configuration:
+            name: mean
+            left: sum of a and b
+            operator: '/'
+            right: '2'
+
+expected: test-sum.out.csv

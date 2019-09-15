@@ -10,6 +10,7 @@
 
 namespace App\Transformer;
 
+use App\Data\Table;
 use App\Transformer\Exception\InvalidArgumentException;
 
 class Manager
@@ -48,5 +49,19 @@ class Manager
         }
 
         return new $transformers[$name]();
+    }
+
+    public function runTransformers(Table $input, array $transformers)
+    {
+        $result = $input;
+        foreach ($transformers as $transformer) {
+            if (!$transformer instanceof AbstractTransformer) {
+                $transformer = $this->getTransformer($transformer['name'])
+                    ->setConfiguration($transformer['configuration']);
+            }
+            $result = $transformer->transform($result);
+        }
+
+        return $result;
     }
 }

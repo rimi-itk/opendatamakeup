@@ -1,0 +1,12 @@
+input: test-000.in.csv
+
+transforms:
+    -
+        name: replace
+        configuration:
+            keys: ['birthday']
+            search: '/([0-9]{2})-([0-9]{2})-([0-9]{2})/'
+            replace: '19\3-\2-\1'
+            regexp: true
+
+expected: test-001.out.csv
