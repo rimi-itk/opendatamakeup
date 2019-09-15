@@ -21,7 +21,7 @@ class ReplaceTransformerTest extends AbstractTransformerTest
         return [
             [
                 [
-                    'keys' => ['birthday'],
+                    'names' => ['birthday'],
                     'search' => '75',
                     'replace' => '1975',
                 ],
@@ -45,7 +45,7 @@ class ReplaceTransformerTest extends AbstractTransformerTest
 
             [
                 [
-                    'keys' => ['birthday'],
+                    'names' => ['birthday'],
                     'search' => '/([0-9]{2})-([0-9]{2})-([0-9]{2})/',
                     'replace' => '19\3-\2-\1',
                     'regexp' => true,

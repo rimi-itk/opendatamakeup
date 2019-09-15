@@ -12,18 +12,18 @@ namespace App\Tests\Transformer;
 
 use App\Data\Table;
 use App\Transformer\Exception\InvalidKeyException;
-use App\Transformer\RemoveKeysTransformer;
+use App\Transformer\SelectNamesTransformer;
 
-class RemoveKeysTransformerTest extends AbstractTransformerTest
+class SelectNamesTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = RemoveKeysTransformer::class;
+    protected static $class = SelectNamesTransformer::class;
 
     public function dataProvider(): array
     {
         return [
             [
                 [
-                    'keys' => ['birthday'],
+                    'names' => ['birthday'],
                 ],
                 Table::createFromCSV([
                     'name',
@@ -34,7 +34,7 @@ class RemoveKeysTransformerTest extends AbstractTransformerTest
 
             [
                 [
-                    'keys' => ['birthday'],
+                    'names' => ['birthday'],
                 ],
                 Table::createFromCSV([
                     'name,birthday',
@@ -43,6 +43,21 @@ class RemoveKeysTransformerTest extends AbstractTransformerTest
                 Table::createFromCSV([
                     'name',
                     'Mikkel',
+                ]),
+            ],
+
+            [
+                [
+                    'names' => ['birthday'],
+                    'include' => false,
+                ],
+                Table::createFromCSV([
+                    'name,birthday',
+                    'Mikkel,1975-05-23',
+                ]),
+                Table::createFromCSV([
+                    'birthday',
+                    '1975-05-23',
                 ]),
             ],
         ];

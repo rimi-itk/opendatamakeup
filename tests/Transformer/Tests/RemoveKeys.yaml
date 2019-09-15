@@ -8,7 +8,7 @@ tests:
     transforms:
       - type: remove_keys
         configuration:
-          keys: ['birthday']
+          names: ['birthday']
         expected: |
           id,name
           1,Mikkel

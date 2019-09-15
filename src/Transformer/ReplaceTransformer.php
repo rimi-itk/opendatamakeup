@@ -19,7 +19,7 @@ use App\Data\Table;
  *     name="Replace",
  *     description="Replace values",
  *     options={
- *         "keys": @Option(type="array"),
+ *         "names": @Option(type="array"),
  *         "search": @Option(type="string"),
  *         "replace": @Option(type="string"),
  *         "regexp": @Option(type="bool", required=false, default=false)
@@ -31,7 +31,7 @@ class ReplaceTransformer extends AbstractTransformer
     /**
      * @var array
      */
-    private $keys;
+    private $names;
 
     /**
      * @var string
@@ -51,14 +51,14 @@ class ReplaceTransformer extends AbstractTransformer
     public function transform(Table $input): Table
     {
         $items = array_map(function ($item) {
-            foreach ($this->keys as $key) {
-                $value = $this->getValue($item, $key);
+            foreach ($this->names as $name) {
+                $value = $this->getValue($item, $name);
                 if ($this->regexp) {
                     $value = preg_replace($this->search, $this->replace, $value);
                 } else {
                     $value = str_replace($this->search, $this->replace, $value);
                 }
-                $item[$key] = $value;
+                $item[$name] = $value;
             }
 
             return $item;

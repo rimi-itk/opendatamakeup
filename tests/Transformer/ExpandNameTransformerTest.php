@@ -10,18 +10,18 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\ExpandKeyTransformer;
+use App\Transformer\ExpandNameTransformer;
 
-class ExpandKeyTransformerTest extends AbstractTransformerTest
+class ExpandNameTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = ExpandKeyTransformer::class;
+    protected static $class = ExpandNameTransformer::class;
 
     public function dataProvider(): array
     {
         return [
             [
                 [
-                    'key' => 'person',
+                    'name' => 'person',
                     'map' => ['name' => 'name'],
                 ],
                 [
@@ -39,7 +39,7 @@ class ExpandKeyTransformerTest extends AbstractTransformerTest
 
             [
                 [
-                    'key' => 'person',
+                    'name' => 'person',
                     'map' => [
                         'name' => 'first name',
                         'birthday' => 'birthday',
@@ -63,7 +63,7 @@ class ExpandKeyTransformerTest extends AbstractTransformerTest
 
             [
                 [
-                    'key' => 'person',
+                    'name' => 'person',
                     'map' => [
                         'name' => 'name.first',
                         'birthday' => 'birthday',

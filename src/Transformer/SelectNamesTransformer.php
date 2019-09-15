@@ -22,16 +22,22 @@ use App\Transformer\Exception\InvalidKeyException;
  *     name="Remove keys",
  *     description="Removes one or more keys from the dataset",
  *     options={
- *         "keys": @Option(type="array"),
+ *         "names": @Option(type="array"),
+ *         "include": @Option(type="bool", required=false, default=true)
  *     }
  * )
  */
-class RemoveKeysTransformer extends AbstractTransformer
+class SelectNamesTransformer extends AbstractTransformer
 {
     /**
      * @var array
      */
-    private $keys;
+    private $names;
+
+    /**
+     * @var bool
+     */
+    private $include;
 
     /**
      * Remove named keys.
@@ -43,14 +49,16 @@ class RemoveKeysTransformer extends AbstractTransformer
     public function transform(Table $input): Table
     {
         $names = array_keys($input->getColumns());
-        $diff = array_diff($this->keys, $names);
+        $diff = array_diff($this->names, $names);
         if (!empty($diff)) {
             throw new InvalidKeyException('invalid keys: '.implode(', ', $diff));
         }
 
-        return $this->map($input, function ($item) {
-            foreach ($this->keys as $key) {
-                unset($item[$key]);
+        $namesToKeep = $this->include ? $this->names : array_diff($names, $this->names);
+
+        return $this->map($input, static function ($item) use ($namesToKeep) {
+            foreach ($namesToKeep as $name) {
+                unset($item[$name]);
             }
 
             return $item;

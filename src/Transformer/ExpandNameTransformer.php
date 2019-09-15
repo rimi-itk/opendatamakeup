@@ -19,17 +19,17 @@ use App\Data\Table;
  *     name="Expand keys",
  *     description="Expand a key into multiple keys",
  *     options={
- *         "key": @Option(type="string"),
+ *         "name": @Option(type="string"),
  *         "map": @Option(type="map")
  *     }
  * )
  */
-class ExpandKeyTransformer extends AbstractTransformer
+class ExpandNameTransformer extends AbstractTransformer
 {
     /**
      * @var string
      */
-    private $key;
+    private $name;
 
     /**
      * @var array
@@ -45,17 +45,15 @@ class ExpandKeyTransformer extends AbstractTransformer
      */
     public function transform(Table $input): Table
     {
-        $items = array_map(function ($item) {
-            $value = $this->getValue($item, $this->key);
-            unset($item[$this->key]);
+        return $this->map($input, function ($item) {
+            $value = $this->getValue($item, $this->name);
+            unset($item[$this->name]);
 
             foreach ($this->map as $name => $propertyPath) {
                 $item[$name] = $this->getValue($value, $propertyPath);
             }
 
             return $item;
-        }, $input->getItems());
-
-        return new Table($items);
+        });
     }
 }

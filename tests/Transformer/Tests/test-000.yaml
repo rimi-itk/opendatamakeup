@@ -4,6 +4,6 @@ transforms:
     -
         name: remove_keys
         configuration:
-            keys: ['birthday']
+            names: ['birthday']
 
 expected: test-000.out.csv
