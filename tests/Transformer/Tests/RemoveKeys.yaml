@@ -6,7 +6,7 @@ input: &input |
 tests:
   - input: *input
     transforms:
-      - type: remove_keys
+      - type: select_names
         configuration:
           names: ['birthday']
         expected: |

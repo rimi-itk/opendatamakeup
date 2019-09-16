@@ -14,7 +14,7 @@ use App\Transformer\ReplaceTransformer;
 
 class ReplaceTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = ReplaceTransformer::class;
+    protected static $transformer = ReplaceTransformer::class;
 
     public function dataProvider(): array
     {

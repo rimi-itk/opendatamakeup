@@ -16,6 +16,7 @@ use App\Data\Table;
 
 /**
  * @Transform(
+ *     id="replace",
  *     name="Replace",
  *     description="Replace values",
  *     options={

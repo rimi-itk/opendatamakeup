@@ -16,49 +16,57 @@ use App\Transformer\SelectNamesTransformer;
 
 class SelectNamesTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = SelectNamesTransformer::class;
+    protected static $transformer = SelectNamesTransformer::class;
 
     public function dataProvider(): array
     {
         return [
             [
                 [
-                    'names' => ['birthday'],
+                    'names' => ['first name'],
                 ],
                 Table::createFromCSV([
                     'name',
                     'Mikkel',
                 ]),
-                new InvalidKeyException('invalid keys: birthday'),
+                new InvalidKeyException('invalid keys: first name'),
             ],
 
             [
                 [
-                    'names' => ['birthday'],
+                    'names' => ['name'],
                 ],
-                Table::createFromCSV([
-                    'name,birthday',
-                    'Mikkel,1975-05-23',
-                ]),
-                Table::createFromCSV([
-                    'name',
-                    'Mikkel',
-                ]),
+                Table::createFromCSV(
+                    <<<'CSV'
+name,birthday
+Mikkel,1975-05-23
+CSV
+                ),
+                Table::createFromCSV(
+                    <<<'CSV'
+name
+Mikkel
+CSV
+                ),
             ],
 
             [
                 [
-                    'names' => ['birthday'],
+                    'names' => ['name'],
                     'include' => false,
                 ],
-                Table::createFromCSV([
-                    'name,birthday',
-                    'Mikkel,1975-05-23',
-                ]),
-                Table::createFromCSV([
-                    'birthday',
-                    '1975-05-23',
-                ]),
+                Table::createFromCSV(
+                    <<<'CSV'
+name,birthday
+Mikkel,1975-05-23
+CSV
+                ),
+                Table::createFromCSV(
+                    <<<'CSV'
+birthday
+1975-05-23
+CSV
+                ),
             ],
         ];
     }

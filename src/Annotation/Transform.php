@@ -12,7 +12,9 @@ namespace App\Annotation;
 
 use App\Annotation\Transform\Option;
 use App\Transformer\Exception\InvalidArgumentException;
+use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\Annotation\Required;
+use Doctrine\Common\Annotations\AnnotationException;
 
 /**
  * @see https://www.doctrine-project.org/projects/doctrine-annotations/en/1.7/custom.html
@@ -20,8 +22,15 @@ use Doctrine\Common\Annotations\Annotation\Required;
  * @Annotation
  * @Target({"CLASS"})
  */
-class Transform
+class Transform implements \JsonSerializable
 {
+    /**
+     * @Required
+     *
+     * @var string
+     */
+    public $id;
+
     /**
      * @Required
      *
@@ -43,9 +52,12 @@ class Transform
      */
     public $options;
 
-    public function __construct($options = [])
+    public function x__construct($values)
     {
-        foreach ($options['options'] as $name => $option) {
+        if (empty($values['sid'])) {
+            throw new AnnotationException(sprintf());
+        }
+        foreach ($values['options'] as $name => $option) {
             if (!\is_string($name)) {
                 throw new InvalidArgumentException(sprintf('Option name "%s" must be a string.', $name));
             }
@@ -54,7 +66,7 @@ class Transform
             }
         }
         // @TODO: Validate options.
-        foreach ($options as $key => $value) {
+        foreach ($values as $key => $value) {
             if (!property_exists($this, $key)) {
                 throw new InvalidArgumentException(sprintf('Property "%s" does not exist on the %s annotation.', $key, self::class));
             }
@@ -65,5 +77,20 @@ class Transform
     public function getOptions()
     {
         return json_decode(json_encode($this->options), true);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->asArray();
+    }
+
+    public function asArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'options' => array_map(static function (Option $option) { return $option->asArray(); }, $this->options),
+        ];
     }
 }

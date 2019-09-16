@@ -52,7 +52,7 @@ class Option implements \JsonSerializable
      * @var mixed
      */
     public $default;
-
+    
     public function jsonSerialize()
     {
         return $this->asArray();

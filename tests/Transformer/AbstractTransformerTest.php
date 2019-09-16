@@ -12,23 +12,36 @@ namespace App\Tests\Transformer;
 
 use App\Data\Table;
 use App\Transformer\Exception\AbstractTransformerException;
-use PHPUnit\Framework\TestCase;
+use App\Transformer\Manager;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-abstract class AbstractTransformerTest extends TestCase
+abstract class AbstractTransformerTest extends KernelTestCase
 {
-    protected static $class = null;
+    protected static $transformer = null;
+
+    /** @var Manager */
+    private $manager;
+
+    protected function setUp(): void
+    {
+        static::bootKernel();
+
+        // @see https://symfony.com/blog/new-in-symfony-4-1-simpler-service-testing
+        $container = static::$container;
+        $this->manager = $container->get(Manager::class);
+    }
 
     /**
      * @dataProvider dataProvider
      *
-     * @param array                              $configuration
+     * @param array                              $options
      * @param array                              $input
      * @param array|AbstractTransformerException $expected
      */
-    public function testTransform(array $configuration, $input, $expected)
+    public function testTransform(array $options, $input, $expected)
     {
-        $transformer = new static::$class();
-        $transformer->setConfiguration($configuration);
+        $transformer = $this->manager->getTransformer(static::$transformer);
+        $transformer->setOptions($options);
 
         if ($expected instanceof AbstractTransformerException) {
             $this->expectExceptionObject($expected);

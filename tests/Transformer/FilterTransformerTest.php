@@ -10,11 +10,12 @@
 
 namespace App\Tests\Transformer;
 
+use App\Data\Table;
 use App\Transformer\FilterTransformer;
 
 class FilterTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = FilterTransformer::class;
+    protected static $transformer = FilterTransformer::class;
 
     public function dataProvider(): array
     {
@@ -25,31 +26,41 @@ class FilterTransformerTest extends AbstractTransformerTest
                     'match' => 'M',
                     'partial' => true,
                 ],
-                [
-                    ['name' => 'Mikkel'],
-                    ['name' => 'James'],
-                ],
-                [
-                    ['name' => 'Mikkel'],
-                ],
+                Table::createFromCSV(
+                    <<<'CSV'
+name
+Mikkel
+James
+CSV
+                ),
+                Table::createFromCSV(
+                    <<<'CSV'
+name
+Mikkel
+CSV
+                ),
             ],
-
-            [
-                [
-                    'key' => 'name',
-                    'match' => 'M',
-                    'partial' => true,
-                    'ignore_case' => true,
-                ],
-                [
-                    ['name' => 'Mikkel'],
-                    ['name' => 'James'],
-                ],
-                [
-                    ['name' => 'Mikkel'],
-                    ['name' => 'James'],
-                ],
-            ],
+            //
+            //            [
+            //                [
+            //                    'key' => 'name',
+            //                    'match' => 'M',
+            //                    'partial' => true,
+            //                    'ignore_case' => true,
+            //                ],
+            //                Table::createFromCSV(<<<'CSV'
+            //name
+            //Mikkel
+            //James
+            //CSV
+            //                ),
+            //                Table::createFromCSV(<<<'CSV'
+            //name
+            //Mikkel
+            //James
+            //CSV
+            //                ),
+            //            ],
         ];
     }
 }

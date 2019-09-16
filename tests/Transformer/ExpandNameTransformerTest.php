@@ -14,7 +14,7 @@ use App\Transformer\ExpandNameTransformer;
 
 class ExpandNameTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = ExpandNameTransformer::class;
+    protected static $transformer = ExpandNameTransformer::class;
 
     public function dataProvider(): array
     {

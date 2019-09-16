@@ -17,6 +17,7 @@ use App\Transformer\Exception\InvalidCalculationException;
 
 /**
  * @Transform(
+ *     id="calculate",
  *     name="Calculate",
  *     description="Calculates (simple) stuff",
  *     options={

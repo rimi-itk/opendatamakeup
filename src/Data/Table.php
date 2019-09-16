@@ -18,6 +18,7 @@ class Table
     public const TYPE_FLOAT = 'float';
     public const TYPE_DATETIME = 'datetime';
     public const TYPE_STRING = 'string';
+    public const TYPE_DATA = 'data';
 
     /**
      * @var array

@@ -16,7 +16,7 @@ use App\Transformer\RenameTransformer;
 
 class RenameTransformerTest extends AbstractTransformerTest
 {
-    protected static $class = RenameTransformer::class;
+    protected static $transformer = RenameTransformer::class;
 
     public function dataProvider(): array
     {

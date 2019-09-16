@@ -20,9 +20,16 @@ class Manager
      */
     private $transformers;
 
+    /**
+     * @var array
+     */
+    private $aliases;
+
     public function __construct(array $transformers)
     {
+        // Add transformer ids (as well as class names).
         $this->transformers = $transformers;
+        $this->aliases = array_combine(array_column($transformers, 'id'), array_keys($transformers));
     }
 
     /**
@@ -40,15 +47,24 @@ class Manager
      *
      * @throws InvalidArgumentException
      */
-    public function getTransformer(string $name): ?AbstractTransformer
+    public function getTransformer(string $name, array $options = null): AbstractTransformer
     {
         $transformers = $this->getTransformers();
+        if (\array_key_exists($name, $this->aliases)) {
+            $name = $this->aliases[$name];
+        }
 
         if (!\array_key_exists($name, $transformers)) {
             throw new InvalidArgumentException(sprintf('Transformer with name "%s" does not exist', $name));
         }
 
-        return new $transformers[$name]();
+        /** @var AbstractTransformer $transformer */
+        $transformer = new $name($transformers[$name]);
+        if (null !== $options) {
+            $transformer->setOptions($options);
+        }
+
+        return $transformer;
     }
 
     public function runTransformers(Table $input, array $transformers)
@@ -57,7 +73,7 @@ class Manager
         foreach ($transformers as $transformer) {
             if (!$transformer instanceof AbstractTransformer) {
                 $transformer = $this->getTransformer($transformer['name'])
-                    ->setConfiguration($transformer['configuration']);
+                    ->setOptions($transformer['configuration']);
             }
             $result = $transformer->transform($result);
         }

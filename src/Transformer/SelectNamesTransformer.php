@@ -19,6 +19,7 @@ use App\Transformer\Exception\InvalidKeyException;
  * Class RemoveKeysTransformer.
  *
  * @Transform(
+ *     id="select_names",
  *     name="Remove keys",
  *     description="Removes one or more keys from the dataset",
  *     options={
@@ -54,10 +55,10 @@ class SelectNamesTransformer extends AbstractTransformer
             throw new InvalidKeyException('invalid keys: '.implode(', ', $diff));
         }
 
-        $namesToKeep = $this->include ? $this->names : array_diff($names, $this->names);
+        $namesToRemove = $this->include ? array_diff($names, $this->names) : $this->names;
 
-        return $this->map($input, static function ($item) use ($namesToKeep) {
-            foreach ($namesToKeep as $name) {
+        return $this->map($input, static function ($item) use ($namesToRemove) {
+            foreach ($namesToRemove as $name) {
                 unset($item[$name]);
             }
 

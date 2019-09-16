@@ -26,7 +26,10 @@ class AppExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $definition = $container->getDefinition(Manager::class);
-        $definition->replaceArgument('$transformers', $config['transformers']);
+//        $services = $container->findTaggedServiceIds('app.transformer');
+//header('content-type: text/plain'); echo var_export($services, true); die(__FILE__.':'.__LINE__.':'.__METHOD__);
+
+//        $definition = $container->getDefinition(Manager::class);
+//        $definition->replaceArgument('$transformers', $config['transformers']);
     }
 }

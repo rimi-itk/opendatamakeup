@@ -16,10 +16,6 @@ use App\Data\Table;
 use App\Transformer\Exception\InvalidConfigurationException;
 use App\Transformer\Exception\InvalidArgumentException;
 use App\Transformer\Exception\InvalidKeyException;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Cache\ApcuCache;
 
 abstract class AbstractTransformer
 {
@@ -31,30 +27,24 @@ abstract class AbstractTransformer
     /**
      * @var array
      */
-    protected $configuration;
+    protected $options;
 
-    public function __construct()
+    public function __construct(array $metadata = null)
     {
-        AnnotationRegistry::registerLoader('class_exists');
+        $this->setMetadata($metadata);
+    }
 
-        $reader = new CachedReader(
-            new AnnotationReader(),
-            new ApcuCache(),
-            $debug = true
-        );
-        $annotation = $reader->getClassAnnotation(new \ReflectionClass($this), Transform::class);
-        if (null === $annotation) {
-            throw new InvalidConfigurationException(sprintf('Annotation @%s missing on class %s', Transform::class, self::class));
-        }
-        $this->metadata = $annotation;
+    public function setMetadata(array $metadata)
+    {
+        $this->metadata = $metadata;
     }
 
     abstract public function transform(Table $input): Table;
 
-    public function setConfiguration(array $configuration): self
+    public function setOptions(array $options): self
     {
-        $this->configuration = $configuration;
-        $this->validateAndApplyConfiguration();
+        $this->options = $options;
+        $this->validateAndApplyOptions();
 
         return $this;
     }
@@ -75,28 +65,33 @@ abstract class AbstractTransformer
         return $this->metadata->description;
     }
 
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+
     public function getOptions()
     {
         return $this->metadata->getOptions();
     }
 
-    protected function validateAndApplyConfiguration()
+    protected function validateAndApplyOptions()
     {
-        foreach ($this->metadata->options as $name => $option) {
-            if ($option->required) {
-                $this->requireKey($name);
+        foreach ($this->metadata['options'] as $name => $option) {
+            if ($option['required']) {
+                $this->requireOption($name);
             }
-            $this->checkType($name, $option->type);
-            $configurationName = $option->name ?? $name;
+            $this->checkType($name, $option['type']);
+            $configurationName = $option['name'] ?? $name;
             if (!property_exists($this, $name)) {
                 throw new InvalidArgumentException(sprintf('Property "%s" does not exist on %s.', $name, self::class));
             }
             $property = new \ReflectionProperty($this, $name);
             $property->setAccessible(true);
-            if (\array_key_exists($configurationName, $this->configuration)) {
-                $property->setValue($this, $this->configuration[$configurationName]);
-            } elseif (isset($option->default)) {
-                $property->setValue($this, $option->default);
+            if (\array_key_exists($configurationName, $this->options)) {
+                $property->setValue($this, $this->options[$configurationName]);
+            } elseif (isset($option['default'])) {
+                $property->setValue($this, $option['default']);
             }
         }
     }
@@ -185,44 +180,44 @@ abstract class AbstractTransformer
         return $value;
     }
 
-    protected function requireKey(string $key): void
+    protected function requireOption(string $option): void
     {
-        if (!\array_key_exists($key, $this->configuration)) {
-            throw new InvalidConfigurationException('missing configuration: '.$key);
+        if (!\array_key_exists($option, $this->options)) {
+            throw new InvalidConfigurationException('missing option: '.$option);
         }
     }
 
     protected function requireArray(string $key): void
     {
-        $this->requireKey($key);
+        $this->requireOption($key);
 
-        if (!$this->isArray($this->configuration[$key])) {
+        if (!$this->isArray($this->options[$key])) {
             throw new InvalidConfigurationException('must be an array: '.$key);
         }
     }
 
     protected function requireMap(string $key): void
     {
-        $this->requireKey($key);
+        $this->requireOption($key);
 
-        if (!$this->isMap($this->configuration[$key])) {
+        if (!$this->isMap($this->options[$key])) {
             throw new InvalidConfigurationException('must be an map (associative array): '.$key);
         }
     }
 
     protected function requireString(string $key): void
     {
-        $this->requireKey($key);
+        $this->requireOption($key);
 
-        if (!$this->isString($this->configuration[$key])) {
+        if (!$this->isString($this->options[$key])) {
             throw new InvalidConfigurationException('must be a string: '.$key);
         }
     }
 
     protected function checkType(string $key, string $typeName): void
     {
-        if (\array_key_exists($key, $this->configuration)) {
-            $value = $this->configuration[$key];
+        if (\array_key_exists($key, $this->options)) {
+            $value = $this->options[$key];
             switch ($typeName) {
                 case 'array':
                     if (!$this->isArray($value)) {
@@ -259,12 +254,12 @@ abstract class AbstractTransformer
      */
     protected function checkBoolean(string $key, bool $default): void
     {
-        if (\array_key_exists($key, $this->configuration)) {
-            if (!$this->isBoolean($this->configuration[$key])) {
+        if (\array_key_exists($key, $this->options)) {
+            if (!$this->isBoolean($this->options[$key])) {
                 throw new InvalidConfigurationException('must be a boolean: '.$key);
             }
         } else {
-            $this->configuration[$key] = $default;
+            $this->options[$key] = $default;
         }
     }
 }

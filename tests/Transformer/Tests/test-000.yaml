@@ -2,8 +2,9 @@ input: test-000.in.csv
 
 transforms:
     -
-        name: remove_keys
+        name: select_names
         configuration:
             names: ['birthday']
+            include: false
 
 expected: test-000.out.csv

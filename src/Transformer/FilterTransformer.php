@@ -16,6 +16,7 @@ use App\Data\Table;
 
 /**
  * @Transform(
+ *     id="filter",
  *     name="Filter",
  *     description="Filter",
  *     options={

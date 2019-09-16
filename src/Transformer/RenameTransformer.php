@@ -18,6 +18,7 @@ use App\Transformer\Exception\InvalidKeyException;
 
 /**
  * @Transform(
+ *     id="rename",
  *     name="Rename",
  *     description="Renames a column",
  *     options={

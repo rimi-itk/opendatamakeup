@@ -16,7 +16,8 @@ use App\Data\Table;
 
 /**
  * @Transform(
- *     name="Expand keys",
+ *     id="expand_name",
+ *     name="Expand name",
  *     description="Expand a key into multiple keys",
  *     options={
  *         "name": @Option(type="string"),

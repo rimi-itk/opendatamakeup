@@ -3,5 +3,5 @@ app:
         calculate: App\Transformer\CalculateTransformer
         expand_key: ExpandKeyTransformer
         filter: FilterTransformer
-        remove_keys: App\Transformer\RemoveKeysTransformer
+        select_names: App\Transformer\SelectNamesTransformer
         replace: App\Transformer\ReplaceTransformer

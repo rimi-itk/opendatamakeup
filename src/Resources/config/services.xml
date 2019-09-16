@@ -8,6 +8,10 @@
         <service id="App\Transformer\Manager" class="App\Transformer\Manager">
             <argument key="$transformers" />
         </service>
+
+        <service id="App\Data\Converter\Converter" class="App\Data\Converter\Converter" public="true">
+            <argument type="service" id="serializer"/>
+        </service>
     </services>
 </container>
 
