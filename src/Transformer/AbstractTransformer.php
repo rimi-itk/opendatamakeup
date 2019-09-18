@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Configuration;
 use App\Annotation\Transform;
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Exception\InvalidConfigurationException;
 use App\Transformer\Exception\InvalidArgumentException;
 use App\Transformer\Exception\InvalidKeyException;
@@ -39,7 +39,7 @@ abstract class AbstractTransformer
         $this->metadata = $metadata;
     }
 
-    abstract public function transform(Table $input): Table;
+    abstract public function transform(DataSource $input): DataSource;
 
     public function setOptions(array $options): self
     {
@@ -99,17 +99,17 @@ abstract class AbstractTransformer
     /**
      * Map table items.
      *
-     * @param Table    $table
-     * @param callable $callback
+     * @param DataSource $table
+     * @param callable   $callback
      *
-     * @return Table
+     * @return DataSource
      */
-    protected function map(Table $table, callable $callback): Table
+    protected function map(DataSource $table, callable $callback): DataSource
     {
         return $table->map($callback);
     }
 
-    protected function filter(Table $table, callable $callback): Table
+    protected function filter(DataSource $table, callable $callback): DataSource
     {
         return $table->filter($callback);
     }

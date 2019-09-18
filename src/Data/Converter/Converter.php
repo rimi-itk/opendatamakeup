@@ -10,7 +10,7 @@
 
 namespace App\Data\Converter;
 
-use App\Data\Table;
+use App\Data\DataSource;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -24,7 +24,7 @@ class Converter
         $this->serializer = $serializer;
     }
 
-    public function toTable($data, string $key = null): Table
+    public function toTable($data, string $key = null): DataSource
     {
         if (\is_string($data)) {
             $data = json_decode($data, true);
@@ -36,10 +36,10 @@ class Converter
 
         $csv = $this->serializer->serialize($data, 'csv');
 
-        return Table::createFromCSV($csv);
+        return DataSource::createFromCSV($csv);
     }
 
-    public function toArray(Table $table)
+    public function toArray(DataSource $table)
     {
         return array_map(function ($item) {
             $unFlattened = [];

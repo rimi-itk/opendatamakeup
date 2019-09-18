@@ -10,7 +10,7 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -33,8 +33,8 @@ class TransformTest extends KernelTestCase
             $data = Yaml::parse($content);
             $inputFilename = \dirname($filename).'/'.$data['input'];
             $expectedFilename = \dirname($filename).'/'.$data['expected'];
-            $input = Table::createFromCSV(file_get_contents($inputFilename));
-            $expected = Table::createFromCSV(file_get_contents($expectedFilename));
+            $input = DataSource::createFromCSV(file_get_contents($inputFilename));
+            $expected = DataSource::createFromCSV(file_get_contents($expectedFilename));
 
             $actual = $manager->runTransformers($input, $data['transforms']);
 

@@ -11,15 +11,10 @@
 namespace App\Data;
 
 use App\Data\Exception\InvalidNameException;
+use Doctrine\DBAL\Types\Type;
 
-class Table
+class DataSource
 {
-    public const TYPE_INT = 'int';
-    public const TYPE_FLOAT = 'float';
-    public const TYPE_DATETIME = 'datetime';
-    public const TYPE_STRING = 'string';
-    public const TYPE_DATA = 'data';
-
     /**
      * @var array
      */
@@ -58,13 +53,13 @@ class Table
     /**
      * Join this Table with another Table.
      *
-     * @param string $name
-     *                     The name to join on
-     * @param table  $that
-     *                     The other table
+     * @param string     $name
+     *                         The name to join on
+     * @param DataSource $that
+     *                         The other table
      *
-     * @return table
-     *               The resulting Table
+     * @return DataSource
+     *                    The resulting Table
      */
     public function join(string $name, self $that)
     {
@@ -88,7 +83,7 @@ class Table
      * @param string|array $csv
      * @param array|null   $headers
      *
-     * @return Table
+     * @return DataSource
      */
     public static function createFromCSV($csv, array $headers = null): self
     {
@@ -108,6 +103,25 @@ class Table
         }, $rows);
 
         return new static($data);
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function toCSV()
+    {
+        $buffer = fopen('php://temp', 'r+');
+        foreach ($this->items as $index => $item) {
+            if (0 === $index) {
+                fputcsv($buffer, array_keys($item));
+            }
+            fputcsv($buffer, $item);
+        }
+        rewind($buffer);
+        $csv = stream_get_contents($buffer);
+        fclose($buffer);
+
+        return $csv;
     }
 
     public function filter(callable $callback): self
@@ -163,27 +177,27 @@ class Table
     private function guessType($name)
     {
         $votes = [
-            static::TYPE_INT => 0,
-            static::TYPE_FLOAT => 0,
-            static::TYPE_DATETIME => 0,
-            static::TYPE_STRING => 0,
+            Type::INTEGER => 0,
+            Type::FLOAT => 0,
+            Type::DATETIME => 0,
+            Type::STRING => 0,
         ];
         foreach ($this->items as $item) {
             $value = $item[$name];
             if (filter_var($value, FILTER_VALIDATE_INT)) {
-                ++$votes[static::TYPE_INT];
+                ++$votes[Type::INTEGER];
             }
             if (filter_var($value, FILTER_VALIDATE_FLOAT)) {
-                ++$votes[static::TYPE_FLOAT];
+                ++$votes[Type::FLOAT];
             }
             if (\is_string($value)) {
                 try {
                     new \DateTime($value);
-                    ++$votes[static::TYPE_DATETIME];
+                    ++$votes[Type::DATETIME];
                 } catch (\Exception $exception) {
                 }
             }
-            ++$votes[static::TYPE_STRING];
+            ++$votes[Type::STRING];
         }
 
         foreach ($votes as $type => $count) {
@@ -192,6 +206,6 @@ class Table
             }
         }
 
-        return static::TYPE_STRING;
+        return Type::STRING;
     }
 }

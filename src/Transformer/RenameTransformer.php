@@ -13,7 +13,7 @@ namespace App\Transformer;
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
 use App\Data\Exception\InvalidNameException;
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Exception\InvalidKeyException;
 
 /**
@@ -40,13 +40,13 @@ class RenameTransformer extends AbstractTransformer
     private $to;
 
     /**
-     * @param Table $input
+     * @param DataSource $input
      *
-     * @return Table
+     * @return DataSource
      *
      * @throws InvalidNameException
      */
-    public function transform(Table $input): Table
+    public function transform(DataSource $input): DataSource
     {
         $columns = $input->getColumns();
         if (\array_key_exists($this->to, $columns)) {

@@ -10,7 +10,7 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Exception\InvalidKeyException;
 use App\Transformer\RenameTransformer;
 
@@ -26,11 +26,11 @@ class RenameTransformerTest extends AbstractTransformerTest
                     'from' => 'birthdate',
                     'to' => 'birthday',
                 ],
-                Table::createFromCSV([
+                DataSource::createFromCSV([
                     'birthdate',
                     '1975-05-23',
                 ]),
-                Table::createFromCSV([
+                DataSource::createFromCSV([
                     'birthday',
                     '1975-05-23',
                 ]),
@@ -41,7 +41,7 @@ class RenameTransformerTest extends AbstractTransformerTest
                     'from' => 'a',
                     'to' => 'A',
                 ],
-                Table::createFromCSV([
+                DataSource::createFromCSV([
                     'a,A',
                     '1,2',
                 ]),

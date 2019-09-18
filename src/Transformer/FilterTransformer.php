@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\Table;
+use App\Data\DataSource;
 
 /**
  * @Transform(
@@ -61,7 +61,7 @@ class FilterTransformer extends AbstractTransformer
      */
     private $include;
 
-    public function transform(Table $input): Table
+    public function transform(DataSource $input): DataSource
     {
         return $this->filter($input, function ($item) {
             $value = $this->getValue($item, $this->key);

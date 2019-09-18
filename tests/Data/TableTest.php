@@ -11,8 +11,9 @@
 namespace App\Tests\Data;
 
 use App\Data\Exception\InvalidNameException;
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Exception\AbstractTransformerException;
+use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase;
 
 class TableTest extends TestCase
@@ -29,7 +30,7 @@ class TableTest extends TestCase
             $this->expectExceptionObject($expected);
         }
 
-        $actual = Table::createFromCSV($csv);
+        $actual = DataSource::createFromCSV($csv);
 
         $this->assertSame($expected['columns'], $actual->getColumns());
         $this->assertSame($expected['items'], $actual->getItems());
@@ -38,13 +39,13 @@ class TableTest extends TestCase
     /**
      * @dataProvider dataProviderJoinTables
      *
-     * @param Table                              $first
-     * @param Table                              $second
-     * @param Table|AbstractTransformerException $expected
+     * @param DataSource                              $first
+     * @param DataSource                              $second
+     * @param DataSource|AbstractTransformerException $expected
      *
      * @throws \App\Data\Exception\InvalidNameException
      */
-    public function testJoinTables(Table $first, string $name, Table $second, $expected)
+    public function testJoinTables(DataSource $first, string $name, DataSource $second, $expected)
     {
         if ($expected instanceof \Exception) {
             $this->expectExceptionObject($expected);
@@ -69,11 +70,11 @@ class TableTest extends TestCase
                     'columns' => [
                         'id' => [
                             'name' => 'id',
-                            'type' => Table::TYPE_INT,
+                            'type' => Type::INTEGER,
                         ],
                         'name' => [
                             'name' => 'name',
-                            'type' => Table::TYPE_STRING,
+                            'type' => Type::STRING,
                         ],
                     ],
                     'items' => [
@@ -99,7 +100,7 @@ class TableTest extends TestCase
                     'columns' => [
                         'number' => [
                             'name' => 'number',
-                            'type' => Table::TYPE_FLOAT,
+                            'type' => Type::FLOAT,
                         ],
                     ],
                     'items' => [
@@ -122,7 +123,7 @@ class TableTest extends TestCase
                     'columns' => [
                         'keys' => [
                             'name' => 'keys',
-                            'type' => Table::TYPE_STRING,
+                            'type' => Type::STRING,
                         ],
                     ],
                     'items' => [
@@ -139,25 +140,25 @@ class TableTest extends TestCase
     {
         return [
             [
-                new Table([]),
+                new DataSource([]),
                 'id',
-                new Table([]),
+                new DataSource([]),
                 new InvalidNameException('Column named "id" does not exist both tables'),
             ],
 
             [
-                Table::createFromCSV(implode(PHP_EOL, [
+                DataSource::createFromCSV(implode(PHP_EOL, [
                     'id,name',
                     '1,Mikkel',
                     '2,James Hetfield',
                 ])),
                 'id',
-                Table::createFromCSV(implode(PHP_EOL, [
+                DataSource::createFromCSV(implode(PHP_EOL, [
                     'id,birthday',
                     '2,1963-08-03',
                     '1,1975-05-23',
                 ])),
-                Table::createFromCSV(implode(PHP_EOL, [
+                DataSource::createFromCSV(implode(PHP_EOL, [
                     'id,name,birthday',
                     '1,Mikkel,1975-05-23',
                     '2,James Hetfield,1963-08-03',

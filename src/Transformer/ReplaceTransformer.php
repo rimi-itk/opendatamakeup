@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\Table;
+use App\Data\DataSource;
 
 /**
  * @Transform(
@@ -49,7 +49,7 @@ class ReplaceTransformer extends AbstractTransformer
      */
     private $regexp;
 
-    public function transform(Table $input): Table
+    public function transform(DataSource $input): DataSource
     {
         $items = array_map(function ($item) {
             foreach ($this->names as $name) {
@@ -65,6 +65,6 @@ class ReplaceTransformer extends AbstractTransformer
             return $item;
         }, $input->getItems());
 
-        return new Table($items);
+        return new DataSource($items);
     }
 }

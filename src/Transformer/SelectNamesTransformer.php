@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\Table;
+use App\Data\DataSource;
 use App\Transformer\Exception\InvalidKeyException;
 
 /**
@@ -47,7 +47,7 @@ class SelectNamesTransformer extends AbstractTransformer
      *
      * @return array
      */
-    public function transform(Table $input): Table
+    public function transform(DataSource $input): DataSource
     {
         $names = array_keys($input->getColumns());
         $diff = array_diff($this->names, $names);
