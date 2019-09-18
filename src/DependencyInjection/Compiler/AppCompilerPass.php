@@ -17,6 +17,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\ArrayCache;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -32,7 +33,7 @@ class AppCompilerPass implements CompilerPassInterface
         AnnotationRegistry::registerLoader('class_exists');
         $reader = new CachedReader(
             new AnnotationReader(),
-            new ApcuCache(),
+            new ArrayCache()
         );
         foreach ($transformers as $class => &$metadata) {
             $annotation = $reader->getClassAnnotation(new \ReflectionClass($class), Transform::class);
