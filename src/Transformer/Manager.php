@@ -10,7 +10,7 @@
 
 namespace App\Transformer;
 
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\InvalidArgumentException;
 
 class Manager
@@ -67,7 +67,7 @@ class Manager
         return $transformer;
     }
 
-    public function runTransformers(DataSource $input, array $transformers)
+    public function runTransformers(DataSet $input, array $transformers)
     {
         $result = $input;
         foreach ($transformers as $transformer) {

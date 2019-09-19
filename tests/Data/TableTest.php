@@ -11,7 +11,7 @@
 namespace App\Tests\Data;
 
 use App\Data\Exception\InvalidNameException;
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\AbstractTransformerException;
 use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ class TableTest extends TestCase
             $this->expectExceptionObject($expected);
         }
 
-        $actual = DataSource::createFromCSV($csv);
+        $actual = DataSet::buildFromCSV($csv);
 
         $this->assertSame($expected['columns'], $actual->getColumns());
         $this->assertSame($expected['items'], $actual->getItems());
@@ -39,13 +39,13 @@ class TableTest extends TestCase
     /**
      * @dataProvider dataProviderJoinTables
      *
-     * @param DataSource                              $first
-     * @param DataSource                              $second
-     * @param DataSource|AbstractTransformerException $expected
+     * @param DataSet                              $first
+     * @param DataSet                              $second
+     * @param DataSet|AbstractTransformerException $expected
      *
      * @throws \App\Data\Exception\InvalidNameException
      */
-    public function testJoinTables(DataSource $first, string $name, DataSource $second, $expected)
+    public function testJoinTables(DataSet $first, string $name, DataSet $second, $expected)
     {
         if ($expected instanceof \Exception) {
             $this->expectExceptionObject($expected);
@@ -140,25 +140,25 @@ class TableTest extends TestCase
     {
         return [
             [
-                new DataSource([]),
+                new DataSet([]),
                 'id',
-                new DataSource([]),
+                new DataSet([]),
                 new InvalidNameException('Column named "id" does not exist both tables'),
             ],
 
             [
-                DataSource::createFromCSV(implode(PHP_EOL, [
+                DataSet::buildFromCSV(implode(PHP_EOL, [
                     'id,name',
                     '1,Mikkel',
                     '2,James Hetfield',
                 ])),
                 'id',
-                DataSource::createFromCSV(implode(PHP_EOL, [
+                DataSet::buildFromCSV(implode(PHP_EOL, [
                     'id,birthday',
                     '2,1963-08-03',
                     '1,1975-05-23',
                 ])),
-                DataSource::createFromCSV(implode(PHP_EOL, [
+                DataSet::buildFromCSV(implode(PHP_EOL, [
                     'id,name,birthday',
                     '1,Mikkel,1975-05-23',
                     '2,James Hetfield,1963-08-03',

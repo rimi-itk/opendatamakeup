@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\DataSource;
+use App\Data\DataSet;
 
 /**
  * @Transform(
@@ -44,7 +44,7 @@ class ExpandNameTransformer extends AbstractTransformer
      *
      * @return array
      */
-    public function transform(DataSource $input): DataSource
+    public function transform(DataSet $input): DataSet
     {
         return $this->map($input, function ($item) {
             $value = $this->getValue($item, $this->name);

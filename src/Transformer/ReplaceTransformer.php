@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\DataSource;
+use App\Data\DataSet;
 
 /**
  * @Transform(
@@ -49,22 +49,25 @@ class ReplaceTransformer extends AbstractTransformer
      */
     private $regexp;
 
-    public function transform(DataSource $input): DataSource
+    public function transform(DataSet $input): DataSet
     {
-        $items = array_map(function ($item) {
+        $output = $input->copy()
+            ->createTable();
+
+        foreach ($input->rows() as $row) {
             foreach ($this->names as $name) {
-                $value = $this->getValue($item, $name);
+                $value = $this->getValue($row, $name);
                 if ($this->regexp) {
                     $value = preg_replace($this->search, $this->replace, $value);
                 } else {
                     $value = str_replace($this->search, $this->replace, $value);
                 }
-                $item[$name] = $value;
+                $row[$name] = $value;
             }
 
-            return $item;
-        }, $input->getItems());
+            $output->insertRow($row);
+        }
 
-        return new DataSource($items);
+        return $output;
     }
 }

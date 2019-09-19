@@ -10,7 +10,7 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\AbstractTransformerException;
 use App\Transformer\Manager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -47,17 +47,17 @@ abstract class AbstractTransformerTest extends KernelTestCase
             $this->expectExceptionObject($expected);
         }
 
-        if (!$input instanceof DataSource) {
-            $input = new DataSource($input);
+        if (!$input instanceof DataSet) {
+            $input = new DataSet($input);
         }
 
         $actual = $transformer->transform($input);
 
-        if (!$expected instanceof DataSource) {
-            $expected = new DataSource($expected);
+        if (!$expected instanceof DataSet) {
+            $expected = new DataSet($expected);
         }
 
-        $this->assertInstanceOf(DataSource::class, $actual);
+        $this->assertInstanceOf(DataSet::class, $actual);
         $this->assertSame($expected->getColumns(), $actual->getColumns(), 'columns');
         $this->assertSame($expected->getItems(), $actual->getItems(), 'items');
     }

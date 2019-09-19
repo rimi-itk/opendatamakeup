@@ -10,7 +10,7 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\InvalidKeyException;
 use App\Transformer\SelectNamesTransformer;
 
@@ -25,7 +25,7 @@ class SelectNamesTransformerTest extends AbstractTransformerTest
                 [
                     'names' => ['first name'],
                 ],
-                DataSource::createFromCSV([
+                DataSet::buildFromCSV([
                     'name',
                     'Mikkel',
                 ]),
@@ -36,13 +36,13 @@ class SelectNamesTransformerTest extends AbstractTransformerTest
                 [
                     'names' => ['name'],
                 ],
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
 CSV
                 ),
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 name
 Mikkel
@@ -55,13 +55,13 @@ CSV
                     'names' => ['name'],
                     'include' => false,
                 ],
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
 CSV
                 ),
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 birthday
 1975-05-23

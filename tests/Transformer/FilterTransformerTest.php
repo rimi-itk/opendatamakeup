@@ -10,7 +10,7 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\FilterTransformer;
 
 class FilterTransformerTest extends AbstractTransformerTest
@@ -26,14 +26,14 @@ class FilterTransformerTest extends AbstractTransformerTest
                     'match' => 'M',
                     'partial' => true,
                 ],
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 name
 Mikkel
 James
 CSV
                 ),
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 name
 Mikkel

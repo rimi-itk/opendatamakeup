@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\InvalidCalculationException;
 
 /**
@@ -56,11 +56,11 @@ class CalculateTransformer extends AbstractTransformer
     private $right;
 
     /**
-     * @param DataSource $input
+     * @param DataSet $input
      *
-     * @return DataSource
+     * @return DataSet
      */
-    public function transform(DataSource $input): DataSource
+    public function transform(DataSet $input): DataSet
     {
         return $this->map($input, function ($item) {
             // @TODO: Check types of operands.

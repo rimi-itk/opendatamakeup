@@ -36,8 +36,11 @@ class AppCompilerPass implements CompilerPassInterface
         );
         foreach ($transformers as $class => &$metadata) {
             $annotation = $reader->getClassAnnotation(new \ReflectionClass($class), Transform::class);
-            $metadata = $annotation->asArray();
+            if (null !== $annotation) {
+                $metadata = $annotation->asArray();
+            }
         }
+        unset($metadata);
 
         $definition = $container->getDefinition(Manager::class);
         $definition->setArgument('$transformers', $transformers);
