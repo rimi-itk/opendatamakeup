@@ -63,8 +63,10 @@ class FilterTransformer extends AbstractTransformer
 
     public function transform(DataSet $input): DataSet
     {
-        return $this->filter($input, function ($item) {
-            $value = $this->getValue($item, $this->key);
+        $output = $input->copy()->createTable();
+
+        foreach ($input->rows() as $row) {
+            $value = $this->getValue($row, $this->key);
             $isMatch = false;
             if ($this->regexp) {
                 throw new \RuntimeException(__METHOD__.' not implemented');
@@ -76,7 +78,11 @@ class FilterTransformer extends AbstractTransformer
                 }
             }
 
-            return $isMatch && $this->include;
-        });
+            if ($isMatch && $this->include) {
+                $output->insertRow($row);
+            }
+        }
+
+        return $output;
     }
 }

@@ -24,8 +24,7 @@ class DataSetManager
 
     public function createDataSet(string $name, array $columns, array $items = []): DataSet
     {
-        $dataSet = new DataSet($name, $columns);
-        $dataSet->setEntityManager($this->entityManager);
+        $dataSet = new DataSet($name, $this->entityManager->getConnection(), $columns);
         if (null !== $items) {
             $dataSet->createTable()->loadData($items);
         }
@@ -35,14 +34,17 @@ class DataSetManager
 
     public function createDataSetFromCSV(string $name, $csv, array $headers = null)
     {
-        $dataSet = new DataSet($name);
-        $dataSet->setEntityManager($this->entityManager);
+        $dataSet = new DataSet($name, $this->entityManager->getConnection());
         $dataSet->buildFromCSV($csv, $headers);
 
         return $dataSet;
     }
 
-    public function createDataSetFromData(array $items)
+    public function createDataSetFromData(string $name, array $items, array $columns = null)
     {
+        $dataSet = new DataSet($name, $this->entityManager->getConnection());
+        $dataSet->buildFromData($items, $columns);
+
+        return $dataSet;
     }
 }

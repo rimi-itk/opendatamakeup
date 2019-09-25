@@ -99,24 +99,6 @@ abstract class AbstractTransformer
     }
 
     /**
-     * Map table items.
-     *
-     * @param DataSet  $table
-     * @param callable $callback
-     *
-     * @return DataSet
-     */
-    protected function map(DataSet $table, callable $callback): DataSet
-    {
-        return $table->map($callback);
-    }
-
-    protected function filter(DataSet $table, callable $callback): DataSet
-    {
-        return $table->filter($callback);
-    }
-
-    /**
      * @param array $value
      *
      * @return bool

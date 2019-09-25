@@ -13,7 +13,7 @@ namespace App\Transformer;
 use App\Data\DataSet;
 use App\Transformer\Exception\InvalidArgumentException;
 
-class Manager
+class TransformerManager
 {
     /**
      * @var array

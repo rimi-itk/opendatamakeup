@@ -9,7 +9,7 @@
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
 
-        <service id="App\Transformer\Manager" class="App\Transformer\Manager">
+        <service id="App\Transformer\TransformerManager" class="App\Transformer\TransformerManager">
             <argument key="$transformers" />
         </service>
 

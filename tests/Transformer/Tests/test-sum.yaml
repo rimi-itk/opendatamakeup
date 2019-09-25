@@ -5,16 +5,12 @@ transforms:
         name: calculate
         configuration:
             name: sum of a and b
-            left: a
-            operator: '+'
-            right: b
+            expression: a + b
 
     -
         name: calculate
         configuration:
             name: mean
-            left: sum of a and b
-            operator: '/'
-            right: '2'
+            expression: '`sum of a and b` / 2'
 
 expected: test-sum.out.csv

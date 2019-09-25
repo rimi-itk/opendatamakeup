@@ -17,13 +17,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManagerInterface;
 
 class DataSet
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     /** @var Connection */
     private $connection;
 
@@ -43,15 +39,21 @@ class DataSet
     /**
      * Table constructor.
      *
-     * @param array      $items
+     * @param string     $name
+     * @param Connection $connection
      * @param array|null $columns
+     *
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function __construct(string $name, array $columns = null)
+    public function __construct(string $name, Connection $connection, array $columns = null)
     {
         if (empty($name)) {
             throw new \RuntimeException('Data set name cannot be empty');
         }
         $this->name = $name;
+        $this->connection = $connection;
+        $this->platform = $this->connection->getDatabasePlatform();
+
         if (null !== $columns) {
             $this->table = $this->buildTable($columns);
         }
@@ -74,8 +76,7 @@ class DataSet
     {
         $name = $this->getNewName();
 
-        return (new static($name, $columns ?? $this->getColumns()->toArray()))
-            ->setEntityManager($this->entityManager);
+        return new static($name, $this->connection, $columns ?? $this->getColumns()->toArray());
     }
 
     /**
@@ -106,10 +107,12 @@ class DataSet
         return $this->buildFromData($items);
     }
 
-    public function buildFromData(array $items): self
+    public function buildFromData(array $items, array $columns = null): self
     {
         if (null === $this->table) {
-            $columns = $this->buildColumns($items);
+            if (null === $columns) {
+                $columns = $this->buildColumns($items);
+            }
             $this->table = $this->buildTable($columns);
         }
         $this->createTable();
@@ -131,9 +134,16 @@ class DataSet
         return $this->table->getName();
     }
 
-    public function getQuotedTableName(string $name = null)
+    public function getQuotedTableName()
     {
-        return $this->quoteName($name ?? $this->getTableName());
+        return $this->quoteName($this->getTableName());
+    }
+
+    public function getQuotedColumnNames()
+    {
+        $names = $this->getColumns()->getKeys();
+
+        return array_combine($names, array_map([$this, 'quoteName'], $names));
     }
 
     public function getQuotedColumnName(string $name)
@@ -170,42 +180,54 @@ class DataSet
             $this->rowsStatement->execute();
         }
         $columns = $this->getColumns();
-        $platform = $this->entityManager->getConnection()->getDatabasePlatform();
 
         while ($row = $this->rowsStatement->fetch()) {
-            array_walk($row, static function (&$value, $name) use ($columns, $platform) {
-                $value = $columns[$name]->getType()->convertToPHPValue($value, $platform);
+            array_walk($row, function (&$value, $name) use ($columns) {
+                $value = $columns[$name]->getType()->convertToPHPValue($value, $this->platform);
             });
             yield $row;
         }
         $this->rowsStatement = null;
     }
 
-    public function insertRow(array $row)
+    public function insertRows(array $rows)
     {
+        $columns = $this->getColumns();
+
         $sql = sprintf(
             'INSERT INTO %s(%s) VALUES (%s);',
             $this->getQuotedTableName(),
-            implode(',', $this->getColumns()->map(function (Column $column) {
+            implode(',', $columns->map(function (Column $column) {
                 return $this->quoteName($column->getName());
             })->getValues()),
-            implode(',', array_fill(0, $this->getColumns()->count(), '?'))
+            implode(',', array_fill(0, $columns->count(), '?'))
         );
         $statement = $this->prepare($sql);
-
-        $types = $this->getColumns()->map(static function (Column $column) {
+        $types = $columns->map(static function (Column $column) {
             return $column->getType();
         });
 
-        $index = 0;
-        foreach ($row as $name => $value) {
-            /** @var Type $type */
-            $type = $types[$name];
-            $statement->bindValue($index + 1, $type->convertToPHPValue($value, $this->platform), $type);
-            ++$index;
+        foreach ($rows as $row) {
+            $index = 0;
+            foreach ($row as $name => $value) {
+                /** @var Type $type */
+                $type = $types[$name];
+                $statement->bindValue($index + 1, $type->convertToPHPValue($value, $this->platform), $type);
+                ++$index;
+            }
+
+            $result = $statement->execute();
+            if (!$result) {
+                return $result;
+            }
         }
 
-        return         $statement->execute();
+        return true;
+    }
+
+    public function insertRow(array $row)
+    {
+        return $this->insertRows([$row]);
     }
 
     /**
@@ -221,11 +243,11 @@ class DataSet
      */
     private function prepare(string $statement): \Doctrine\DBAL\Driver\Statement
     {
-        if (null === $this->entityManager) {
-            throw new \RuntimeException('No entity manager set on data source');
+        if (null === $this->connection) {
+            throw new \RuntimeException('No connection set on data source');
         }
 
-        return $this->entityManager->getConnection()->prepare($statement);
+        return $this->connection->prepare($statement);
     }
 
     /**
@@ -280,18 +302,9 @@ class DataSet
         return $csv;
     }
 
-    public function setEntityManager(EntityManagerInterface $entityManager): self
-    {
-        $this->entityManager = $entityManager;
-        $this->connection = $entityManager->getConnection();
-        $this->platform = $this->connection->getDatabasePlatform();
-
-        return $this;
-    }
-
     private function quoteName($name): string
     {
-        return '`'.$name.'`';
+        return $this->platform->quoteIdentifier($name);
     }
 
     public function getName()
@@ -311,7 +324,7 @@ class DataSet
      */
     private function buildTable(array $columns)
     {
-        $tableName = '__data_set_'.$this->getName();
+        $tableName = $this->quoteName('__data_set_'.$this->getName());
         $table = new Table($tableName);
         foreach ($columns as $column) {
             $name = $column instanceof Column ? $column->getName() : $column['name'];
@@ -329,13 +342,20 @@ class DataSet
      */
     public function createTable(): self
     {
-        if (null === $this->entityManager) {
-            throw new \RuntimeException('No entity manager set on data source');
+        if (null === $this->connection) {
+            throw new \RuntimeException('No connection set on data source');
         }
 
-        $connection = $this->entityManager->getConnection();
-        $schema = $connection->getSchemaManager();
+        $schema = $this->connection->getSchemaManager();
         $schema->dropAndCreateTable($this->table);
+
+        return $this;
+    }
+
+    public function dropTable(): self
+    {
+        $schema = $this->connection->getSchemaManager();
+        $schema->dropTable($this->table);
 
         return $this;
     }
@@ -352,51 +372,22 @@ class DataSet
      */
     public function loadData(array $items, bool $truncate = true): self
     {
-        $columns = $this->getColumns();
-
-        $sql = sprintf(
-            'INSERT INTO %s(%s) VALUES (%s);',
-            $this->getQuotedTableName(),
-            implode(',', $columns->map(function (Column $column) {
-                return $this->quoteName($column->getName());
-            })->getValues()),
-            implode(',', array_fill(0, $columns->count(), '?'))
-        );
-        $statement = $this->prepare($sql);
-        $types = $columns->map(static function (Column $column) {
-            return $column->getType();
-        });
-
-        foreach ($items as $item) {
-            $index = 0;
-            foreach ($item as $name => $value) {
-                /** @var Type $type */
-                $type = $types[$name];
-                $statement->bindValue($index + 1, $type->convertToPHPValue($value, $this->platform), $type);
-                ++$index;
-            }
-            $statement->execute();
+        if ($truncate) {
+            $this->clearTable();
         }
+        $this->insertRows($items);
 
         return $this;
     }
 
-    public function filter(callable $callback): self
+    public function clearTable()
     {
-        // Filter may remove all columns, so we have to pass the columns on.
-        return new static(array_filter($this->items, $callback), $this->columns);
-    }
+        $sql = sprintf(
+            'TRUNCATE %s;',
+            $this->getQuotedTableName()
+        );
 
-    public function map(callable $callback)
-    {
-        return new static(array_map($callback, $this->items));
-    }
-
-    private function setColumns(array $columns)
-    {
-        $this->columns = $columns;
-
-        return $this;
+        return $this->prepare($sql)->execute();
     }
 
     private function buildColumns(array $items): array
@@ -460,6 +451,7 @@ class DataSet
             Type::DATETIME => 0,
             Type::DATE => 0,
             Type::STRING => 0,
+            Type::JSON => 0,
         ];
         foreach ($values as $value) {
             if (filter_var($value, FILTER_VALIDATE_INT)) {
@@ -469,12 +461,13 @@ class DataSet
                 ++$votes[Type::FLOAT];
             }
             if (\is_string($value) && !empty($value)) {
-                // @TODO: Distinguish between DATE and DATETIME.
-                try {
-                    new \DateTime($value);
-                    ++$votes[Type::DATETIME];
-                } catch (\Exception $exception) {
-                }
+//                // @TODO: Distinguish between DATE and DATETIME.
+//                try {
+//                    new \DateTime($value);
+//                    ++$votes[Type::DATETIME];
+//                } catch (\Exception $exception) {
+//                }
+                // @TODO: Detect JSON.
             }
 
             // String is the most generic type.

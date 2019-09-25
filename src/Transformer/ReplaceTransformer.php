@@ -18,11 +18,12 @@ use App\Data\DataSet;
  * @Transform(
  *     id="replace",
  *     name="Replace",
- *     description="Replace values",
+ *     description="Replace values (only for string columns)",
  *     options={
  *         "names": @Option(type="array"),
  *         "search": @Option(type="string"),
  *         "replace": @Option(type="string"),
+ *         "partial": @Option(type="bool", required=false, default=false),
  *         "regexp": @Option(type="bool", required=false, default=false)
  *     }
  * )
@@ -47,12 +48,20 @@ class ReplaceTransformer extends AbstractTransformer
     /**
      * @var bool
      */
+    private $partial;
+
+    /**
+     * @var bool
+     */
     private $regexp;
 
     public function transform(DataSet $input): DataSet
     {
-        $output = $input->copy()
-            ->createTable();
+        foreach ($this->names as $name) {
+            // @TODO Check that type of column is string.
+        }
+
+        $output = $input->copy()->createTable();
 
         foreach ($input->rows() as $row) {
             foreach ($this->names as $name) {

@@ -10,7 +10,6 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSet;
 use App\Transformer\Exception\InvalidKeyException;
 use App\Transformer\SelectNamesTransformer;
 
@@ -25,10 +24,13 @@ class SelectNamesTransformerTest extends AbstractTransformerTest
                 [
                     'names' => ['first name'],
                 ],
-                DataSet::buildFromCSV([
-                    'name',
-                    'Mikkel',
-                ]),
+                $this->buildFromCSV(
+                    self::class,
+                    <<<'CSV'
+name
+Mikkel
+CSV
+                ),
                 new InvalidKeyException('invalid keys: first name'),
             ],
 
@@ -36,13 +38,15 @@ class SelectNamesTransformerTest extends AbstractTransformerTest
                 [
                     'names' => ['name'],
                 ],
-                DataSet::buildFromCSV(
+                $this->buildFromCSV(
+                    self::class,
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
 CSV
                 ),
-                DataSet::buildFromCSV(
+                $this->buildFromCSV(
+                    self::class.'_000',
                     <<<'CSV'
 name
 Mikkel
@@ -55,13 +59,15 @@ CSV
                     'names' => ['name'],
                     'include' => false,
                 ],
-                DataSet::buildFromCSV(
+                $this->buildFromCSV(
+                    self::class,
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
 CSV
                 ),
-                DataSet::buildFromCSV(
+                $this->buildFromCSV(
+                    self::class.'_000',
                     <<<'CSV'
 birthday
 1975-05-23
