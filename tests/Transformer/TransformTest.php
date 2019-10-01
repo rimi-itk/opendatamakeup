@@ -35,7 +35,7 @@ class TransformTest extends KernelTestCase
             $inputFilename = \dirname($filename).'/'.$data['input'];
             $expectedFilename = \dirname($filename).'/'.$data['expected'];
             $input = $dataSetManager->createDataSetFromCSV(static::class, file_get_contents($inputFilename));
-            $expected = $dataSetManager->createDataSetFromCSV(static::class.'_000', file_get_contents($expectedFilename));
+            $expected = $dataSetManager->createDataSetFromCSV(static::class.'_expected', file_get_contents($expectedFilename));
 
             $actual = $manager->runTransformers($input, $data['transforms']);
 

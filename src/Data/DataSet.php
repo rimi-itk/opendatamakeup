@@ -139,9 +139,14 @@ class DataSet
         return $this->quoteName($this->getTableName());
     }
 
+    public function getColumnNames()
+    {
+        return $this->getColumns()->getKeys();
+    }
+
     public function getQuotedColumnNames()
     {
-        $names = $this->getColumns()->getKeys();
+        $names = $this->getColumnNames();
 
         return array_combine($names, array_map([$this, 'quoteName'], $names));
     }

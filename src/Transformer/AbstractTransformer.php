@@ -13,12 +13,29 @@ namespace App\Transformer;
 use App\Annotation\Configuration;
 use App\Annotation\Transform;
 use App\Data\DataSet;
+use App\Data\Exception\InvalidTypeException;
 use App\Transformer\Exception\InvalidConfigurationException;
 use App\Transformer\Exception\InvalidArgumentException;
 use App\Transformer\Exception\InvalidKeyException;
+use Doctrine\DBAL\Types\BooleanType;
+use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\DateType;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\Type;
 
 abstract class AbstractTransformer
 {
+    public static $types = [
+        'bool' => BooleanType::class,
+        'int' => IntegerType::class,
+        'float' => FloatType::class,
+        'string' => StringType::class,
+        'date' => DateType::class,
+        'datetime' => DateTimeType::class,
+    ];
+
     /**
      * @var Transform
      */
@@ -134,6 +151,11 @@ abstract class AbstractTransformer
         return \is_bool($value);
     }
 
+    protected function isType($value): bool
+    {
+        return $this->isString($value) && \array_key_exists($value, static::$types);
+    }
+
     protected function isReadable($objectOrArray, $propertyPath): bool
     {
         $propertyPath = $this->fixPropertyPath($propertyPath);
@@ -162,6 +184,18 @@ abstract class AbstractTransformer
         }
 
         return $value;
+    }
+
+    protected function getType(string $name)
+    {
+        if (!\array_key_exists($name, static::$types)) {
+            throw new InvalidTypeException($name);
+        }
+        if ('int' === $name) {
+            $name = 'integer';
+        }
+
+        return Type::getType($name);
     }
 
     protected function requireOption(string $option): void
@@ -222,6 +256,11 @@ abstract class AbstractTransformer
                 case 'boolean':
                     if (!$this->isBoolean($value)) {
                         throw new InvalidConfigurationException('Must be a boolean: '.$key);
+                    }
+                    break;
+                case 'type':
+                    if (!$this->isType($value)) {
+                        throw new InvalidConfigurationException('Must be a type: '.$key);
                     }
                     break;
                 default:

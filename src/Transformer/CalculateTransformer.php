@@ -25,6 +25,7 @@ use Doctrine\DBAL\Types\Type;
  *     options={
  *         "name": @Option(type="string"),
  *         "expression": @Option(type="string"),
+ *         "type": @Option(type="type"),
  *     }
  * )
  */
@@ -41,6 +42,11 @@ class CalculateTransformer extends AbstractTransformer
     private $expression;
 
     /**
+     * @var string
+     */
+    private $type;
+
+    /**
      * @param DataSet $input
      *
      * @return DataSet
@@ -48,14 +54,11 @@ class CalculateTransformer extends AbstractTransformer
     public function transform(DataSet $input): DataSet
     {
         $columns = $input->getColumns();
-        // @TODO: Confirm that this creates a fresh clone withoput any references to the original.
+        // @TODO: Confirm that this creates a fresh clone without any references to the original.
         $newColumns = clone $columns;
 
-        if (!$newColumns->containsKey($this->name)) {
-            // @TODO: Compute type of result column from expression.
-            $type = Type::getType(Type::INTEGER);
-            $newColumns[$this->name] = new Column($this->name, $type);
-        }
+        $type = $this->getType($this->type);
+        $newColumns[$this->name] = new Column($this->name, $type);
 
         [$names, $quotedExpression] = $this->getQuoteNamesInExpression($this->expression, $input);
         $invalidNames = array_diff($names, $columns->getKeys());

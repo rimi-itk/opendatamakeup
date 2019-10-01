@@ -58,4 +58,20 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
     }
+
+    // public function getCacheDir()
+    // {
+    //     if (in_array($this->environment, ['dev', 'test'])) {
+    //         return sys_get_temp_dir();
+    //     }
+    //     return parent::getCacheDir();
+    // }
+
+    // public function getLogDir()
+    // {
+    //     if (in_array($this->environment, ['dev', 'test'])) {
+    //         return sys_get_temp_dir();
+    //     }
+    //     return parent::getLogDir();
+    // }
 }

@@ -26,14 +26,14 @@ class RenameTransformerTest extends AbstractTransformerTest
                     'to' => 'birthday',
                 ],
                 $this->buildFromCSV(
-                    static::class,
+                    $this->getTableName(),
                     <<<'CSV'
 birthdate
 1975-05-23
 CSV
                 ),
                 $this->buildFromCSV(
-                    static::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 birthday
 1975-05-23

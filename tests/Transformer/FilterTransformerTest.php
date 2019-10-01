@@ -26,7 +26,7 @@ class FilterTransformerTest extends AbstractTransformerTest
                     'partial' => true,
                 ],
                 $this->buildFromCSV(
-                    static::class,
+                    $this->getTableName(),
                     <<<'CSV'
 name
 Mikkel
@@ -34,7 +34,7 @@ James
 CSV
                 ),
                 $this->buildFromCSV(
-                    static::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 name
 Mikkel
@@ -50,7 +50,7 @@ CSV
                     'ignore_case' => true,
                 ],
                 $this->buildFromCSV(
-                    static::class,
+                    $this->getTableName(),
                     <<<'CSV'
 name
 Mikkel
@@ -58,7 +58,7 @@ James
 CSV
                 ),
                 $this->buildFromCSV(
-                    static::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 name
 Mikkel

@@ -8,8 +8,8 @@
  * This source file is subject to the MIT license.
  */
 
-namespace App\Data;
+namespace App\Data\Exception;
 
-class DataSource
+class InvalidTypeException extends \Exception
 {
 }

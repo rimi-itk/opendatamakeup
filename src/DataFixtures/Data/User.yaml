@@ -1,0 +1,14 @@
+-
+    '@id': user:1
+    email: super-admin@example.com
+    password: password
+    roles: [ROLE_SUPER_ADMIN]
+    enabled: true
+
+-
+    '@id': user:2
+    email: test-user@example.com
+    password: testuser
+    roles: [ROLE_USER]
+    enabled: true
+

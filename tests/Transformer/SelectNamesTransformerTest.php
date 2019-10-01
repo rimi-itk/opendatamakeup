@@ -46,7 +46,7 @@ Mikkel,1975-05-23
 CSV
                 ),
                 $this->buildFromCSV(
-                    self::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 name
 Mikkel
@@ -67,7 +67,7 @@ Mikkel,1975-05-23
 CSV
                 ),
                 $this->buildFromCSV(
-                    self::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 birthday
 1975-05-23

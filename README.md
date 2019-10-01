@@ -1,5 +1,24 @@
 # Open data makeup
 
+```sh
+docker-compose up --detach
+docker-compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+docker-compose exec phpfpm bin/console fos:user:create --super-admin super-admin@example.com super-admin@example.com password
+echo http://127.0.0.1:$(docker-compose port nginx 80 | cut -d: -f2)
+```
+
+Run tests:
+
+```sh
+docker-compose exec phpfpm bin/phpunit
+```
+
+Fixtures:
+
+```sh
+docker-compose exec phpfpm bin/console  doctrine:fixtures:load --no-interaction
+```
+
 ## Using a database as data storage
 
 The general idea is to use a database as storage and run simple transformations as sql queries and use code for more elaborate transforms.

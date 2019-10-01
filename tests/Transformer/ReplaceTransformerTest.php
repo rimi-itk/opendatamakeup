@@ -27,7 +27,7 @@ class ReplaceTransformerTest extends AbstractTransformerTest
                     'replace' => '1975',
                 ],
                 $this->buildFromCSV(
-                    static::class,
+                    $this->getTableName(),
                     <<<'CSV'
 birthday
 23-05-75
@@ -35,7 +35,7 @@ birthday
 CSV
                 ),
                 $this->buildFromCSV(
-                    static::class.'_000',
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 birthday
 23-05-1975
@@ -52,14 +52,14 @@ CSV
                     'regexp' => true,
                 ],
                 $this->buildFromCSV(
-                    static::class,
+                    $this->getTableName(),
                     <<<'CSV'
 birthday
 23-05-75
 03-08-63
 CSV
                 ),
-                $this->buildFromData(static::class.'_000', [
+                $this->buildFromData($this->getTableName('_expected'), [
                     ['birthday' => '1975-05-23'],
                     ['birthday' => '1963-08-03'],
                 ], [

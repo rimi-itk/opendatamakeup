@@ -60,12 +60,22 @@ abstract class AbstractTransformerTest extends KernelTestCase
         }
 
         $actual = $transformer->transform($input);
-
         $this->assertEquals($expected->getColumns(), $actual->getColumns(), 'columns');
-        $this->assertEquals($expected->rows(), $actual->rows(), 'items');
+        $this->assertEquals(iterator_to_array($expected->rows()), iterator_to_array($actual->rows()), 'items');
     }
 
     abstract public function dataProvider();
+
+    protected function getTableName(string $suffix = null)
+    {
+        $name = preg_replace('@^([a-z]+\\\\)+@i', '', static::class);
+
+        if (null !== $suffix) {
+            $name .= $suffix;
+        }
+
+        return $name;
+    }
 
     protected function buildFromCSV(string $name, string $csv, array $columns = null)
     {

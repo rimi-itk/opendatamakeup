@@ -25,7 +25,7 @@ class ExpandNameTransformerTest extends AbstractTransformerTest
                     'map' => ['name' => 'name'],
                 ],
                 $this->buildFromData(
-                    static::class,
+                    $this->getTableName(),
                     [
                         [
                             'person' => [
@@ -36,7 +36,7 @@ class ExpandNameTransformerTest extends AbstractTransformerTest
                     ]
                 ),
                 $this->buildFromData(
-                    static::class.'_000',
+                    $this->getTableName('_expected'),
                     [
                         ['name' => 'Mikkel'],
                     ]
