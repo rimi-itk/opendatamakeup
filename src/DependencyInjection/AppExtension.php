@@ -10,7 +10,6 @@
 
 namespace App\DependencyInjection;
 
-use App\Transformer\Manager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;

@@ -12,7 +12,7 @@ namespace App\DependencyInjection\Compiler;
 
 use App\Annotation\Transform;
 use App\Transformer\AbstractTransformer;
-use App\Transformer\Manager;
+use App\Transformer\TransformerManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -36,10 +36,13 @@ class AppCompilerPass implements CompilerPassInterface
         );
         foreach ($transformers as $class => &$metadata) {
             $annotation = $reader->getClassAnnotation(new \ReflectionClass($class), Transform::class);
-            $metadata = $annotation->asArray();
+            if (null !== $annotation) {
+                $metadata = $annotation->asArray();
+            }
         }
+        unset($metadata);
 
-        $definition = $container->getDefinition(Manager::class);
+        $definition = $container->getDefinition(TransformerManager::class);
         $definition->setArgument('$transformers', $transformers);
     }
 }

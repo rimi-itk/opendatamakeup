@@ -12,8 +12,9 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\DataSource;
+use App\Data\DataSet;
 use App\Transformer\Exception\InvalidKeyException;
+use Doctrine\DBAL\Schema\Column;
 
 /**
  * Class RemoveKeysTransformer.
@@ -47,22 +48,32 @@ class SelectNamesTransformer extends AbstractTransformer
      *
      * @return array
      */
-    public function transform(DataSource $input): DataSource
+    public function transform(DataSet $input): DataSet
     {
-        $names = array_keys($input->getColumns());
+        $columns = $input->getColumns();
+        $names = $columns->getKeys();
         $diff = array_diff($this->names, $names);
         if (!empty($diff)) {
             throw new InvalidKeyException('invalid keys: '.implode(', ', $diff));
         }
 
-        $namesToRemove = $this->include ? array_diff($names, $this->names) : $this->names;
+        $namesToKeep = $this->include ? $this->names : array_diff($names, $this->names);
 
-        return $this->map($input, static function ($item) use ($namesToRemove) {
-            foreach ($namesToRemove as $name) {
-                unset($item[$name]);
-            }
-
-            return $item;
+        $newColumns = $columns->filter(static function ($value, $name) use ($namesToKeep) {
+            return \in_array($name, $namesToKeep, true);
         });
+
+        $output = $input->copy($newColumns->toArray())->createTable();
+
+        $sql = sprintf(
+            'INSERT INTO %s SELECT %s FROM %s;',
+            $output->getQuotedTableName(),
+            implode(',', $newColumns->map(static function (Column $column) use ($input) {
+                return $input->getQuotedColumnName($column->getName());
+            })->getValues()),
+            $input->getQuotedTableName()
+        );
+
+        return $output->buildFromSQL($sql);
     }
 }

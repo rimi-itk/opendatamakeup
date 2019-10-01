@@ -10,7 +10,7 @@
 
 namespace App\Data\Converter;
 
-use App\Data\DataSource;
+use App\Data\DataSet;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -24,10 +24,10 @@ class Converter
         $this->serializer = $serializer;
     }
 
-    public function toTable($data, string $key = null): DataSource
+    public function toTable($data, string $key = null): DataSet
     {
         if (\is_string($data)) {
-            $data = json_decode($data, true);
+            $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         }
 
         if (null !== $key) {
@@ -36,10 +36,10 @@ class Converter
 
         $csv = $this->serializer->serialize($data, 'csv');
 
-        return DataSource::createFromCSV($csv);
+        return DataSet::buildFromCSV($csv);
     }
 
-    public function toArray(DataSource $table)
+    public function toArray(DataSet $table)
     {
         return array_map(function ($item) {
             $unFlattened = [];
@@ -63,21 +63,6 @@ class Converter
                 $pointer = &$pointer[$step];
             }
             $pointer = $value;
-        }
-
-        return;
-
-        foreach ($item as $name => $value) {
-            $steps = explode($keySeparator, $name);
-            $key = array_shift($steps);
-            foreach (array_reverse($steps) as $index => $step) {
-                if (0 === $index) {
-                    $tmp[$step] = $value;
-                } else {
-                    $tmp[$step] = $tmp;
-                }
-            }
-            $result[$key];
         }
     }
 }

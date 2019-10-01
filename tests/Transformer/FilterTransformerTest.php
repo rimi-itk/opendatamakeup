@@ -10,7 +10,6 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSource;
 use App\Transformer\FilterTransformer;
 
 class FilterTransformerTest extends AbstractTransformerTest
@@ -26,41 +25,47 @@ class FilterTransformerTest extends AbstractTransformerTest
                     'match' => 'M',
                     'partial' => true,
                 ],
-                DataSource::createFromCSV(
+                $this->buildFromCSV(
+                    $this->getTableName(),
                     <<<'CSV'
 name
 Mikkel
 James
 CSV
                 ),
-                DataSource::createFromCSV(
+                $this->buildFromCSV(
+                    $this->getTableName('_expected'),
                     <<<'CSV'
 name
 Mikkel
 CSV
                 ),
             ],
-            //
-            //            [
-            //                [
-            //                    'key' => 'name',
-            //                    'match' => 'M',
-            //                    'partial' => true,
-            //                    'ignore_case' => true,
-            //                ],
-            //                Table::createFromCSV(<<<'CSV'
-            //name
-            //Mikkel
-            //James
-            //CSV
-            //                ),
-            //                Table::createFromCSV(<<<'CSV'
-            //name
-            //Mikkel
-            //James
-            //CSV
-            //                ),
-            //            ],
+
+            [
+                [
+                    'key' => 'name',
+                    'match' => 'M',
+                    'partial' => true,
+                    'ignore_case' => true,
+                ],
+                $this->buildFromCSV(
+                    $this->getTableName(),
+                    <<<'CSV'
+name
+Mikkel
+James
+CSV
+                ),
+                $this->buildFromCSV(
+                    $this->getTableName('_expected'),
+                    <<<'CSV'
+name
+Mikkel
+James
+CSV
+                ),
+            ],
         ];
     }
 }

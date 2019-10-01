@@ -1,0 +1,17 @@
+-
+    name: Test
+    dataSources:
+        - '@data_source:test'
+    transforms:
+        - name: Change column type
+          transformer: change_type
+          transformerArguments:
+              - columns: [name]
+                type: date
+        - name: Change column type
+          transformer: change_type
+          transformerArguments:
+              - columns: [name]
+                type: date
+
+

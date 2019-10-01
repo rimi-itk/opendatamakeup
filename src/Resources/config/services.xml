@@ -5,7 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="App\Transformer\Manager" class="App\Transformer\Manager">
+        <service id="App\Data\DataSetManager" class="App\Data\DataSetManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+        </service>
+
+        <service id="App\Transformer\TransformerManager" class="App\Transformer\TransformerManager">
             <argument key="$transformers" />
         </service>
 

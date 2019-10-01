@@ -11,7 +11,7 @@
 namespace App\Tests\Data\Converter;
 
 use App\Data\Converter\Converter;
-use App\Data\DataSource;
+use App\Data\DataSet;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ConverterTest extends KernelTestCase
@@ -49,10 +49,10 @@ class ConverterTest extends KernelTestCase
     /**
      * @dataProvider dataToArray
      *
-     * @param DataSource $table
-     * @param array      $expected
+     * @param DataSet $table
+     * @param array   $expected
      */
-    public function testToArray(DataSource $table, array $expected): void
+    public function testToArray(DataSet $table, array $expected): void
     {
         $actual = $this->converter->toArray($table);
 
@@ -68,7 +68,7 @@ class ConverterTest extends KernelTestCase
                     ['name' => 'James'],
                 ],
                 null,
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 person.name,name
 Mikkel,
@@ -85,7 +85,7 @@ CSV
                     ],
                 ],
                 'data',
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 person.name,name
 Mikkel,
@@ -100,7 +100,7 @@ CSV
     {
         return [
             [
-                DataSource::createFromCSV(
+                DataSet::buildFromCSV(
                     <<<'CSV'
 person.name,name
 Mikkel,

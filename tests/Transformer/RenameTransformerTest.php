@@ -10,7 +10,6 @@
 
 namespace App\Tests\Transformer;
 
-use App\Data\DataSource;
 use App\Transformer\Exception\InvalidKeyException;
 use App\Transformer\RenameTransformer;
 
@@ -26,27 +25,34 @@ class RenameTransformerTest extends AbstractTransformerTest
                     'from' => 'birthdate',
                     'to' => 'birthday',
                 ],
-                DataSource::createFromCSV([
-                    'birthdate',
-                    '1975-05-23',
-                ]),
-                DataSource::createFromCSV([
-                    'birthday',
-                    '1975-05-23',
-                ]),
+                $this->buildFromCSV(
+                    $this->getTableName(),
+                    <<<'CSV'
+birthdate
+1975-05-23
+CSV
+                ),
+                $this->buildFromCSV(
+                    $this->getTableName('_expected'),
+                    <<<'CSV'
+birthday
+1975-05-23
+CSV
+                ),
             ],
 
-            [
-                [
-                    'from' => 'a',
-                    'to' => 'A',
-                ],
-                DataSource::createFromCSV([
-                    'a,A',
-                    '1,2',
-                ]),
-                new InvalidKeyException('Name "A" already exists'),
-            ],
+            //            [
+            //                [
+            //                    'from' => 'a',
+            //                    'to' => 'A',
+            //                ],
+            //                $this->buildFromCSV(<<<'CSV'
+            //a,A
+            //1,2
+            //CSV
+            //                ),
+            //                new InvalidKeyException('Name "A" already exists'),
+            //            ],
         ];
     }
 }

@@ -76,7 +76,7 @@ class Transform implements \JsonSerializable
 
     public function getOptions()
     {
-        return json_decode(json_encode($this->options), true);
+        return json_decode(json_encode($this->options, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function jsonSerialize()

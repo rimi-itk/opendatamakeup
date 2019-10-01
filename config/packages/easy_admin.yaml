@@ -1,0 +1,33 @@
+easy_admin:
+    entities:
+        User:
+            class: App\Entity\User
+
+        DataSource:
+           class: App\Entity\DataSource
+
+           list:
+               fields:
+                   - property: name
+                   - property: url
+                   - property: type
+
+           form:
+               fields:
+                   - property: name
+                   - property: url
+                   - property: type
+
+        DataWrangler:
+            class: App\Entity\DataWrangler
+            list:
+                fields:
+                    - property: name
+                    - property: dataSources
+                    - property: transforms
+
+            form:
+                fields:
+                    - property: name
+                    - property: dataSources
+                    - property: transforms
