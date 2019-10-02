@@ -20,7 +20,7 @@ use App\Data\DataSet;
  *     name="Replace",
  *     description="Replace values (only for string columns)",
  *     options={
- *         "names": @Option(type="array"),
+ *         "columns": @Option(type="columns"),
  *         "search": @Option(type="string"),
  *         "replace": @Option(type="string"),
  *         "partial": @Option(type="bool", required=false, default=false),
@@ -33,7 +33,7 @@ class ReplaceTransformer extends AbstractTransformer
     /**
      * @var array
      */
-    private $names;
+    private $columns;
 
     /**
      * @var string
@@ -57,21 +57,21 @@ class ReplaceTransformer extends AbstractTransformer
 
     public function transform(DataSet $input): DataSet
     {
-        foreach ($this->names as $name) {
+        foreach ($this->columns as $column) {
             // @TODO Check that type of column is string.
         }
 
         $output = $input->copy()->createTable();
 
         foreach ($input->rows() as $row) {
-            foreach ($this->names as $name) {
-                $value = $this->getValue($row, $name);
+            foreach ($this->columns as $column) {
+                $value = $this->getValue($row, $column);
                 if ($this->regexp) {
                     $value = preg_replace($this->search, $this->replace, $value);
                 } else {
                     $value = str_replace($this->search, $this->replace, $value);
                 }
-                $row[$name] = $value;
+                $row[$column] = $value;
             }
 
             $output->insertRow($row);

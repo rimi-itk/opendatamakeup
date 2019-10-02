@@ -17,20 +17,20 @@ use App\Data\DataSet;
 /**
  * @Transform(
  *     id="expand_name",
- *     name="Expand name",
+ *     name="Expand column",
  *     description="Expand a key into multiple keys",
  *     options={
- *         "name": @Option(type="string"),
+ *         "column": @Option(type="column"),
  *         "map": @Option(type="map")
  *     }
  * )
  */
-class ExpandNameTransformer extends AbstractTransformer
+class ExpandColumnTransformer extends AbstractTransformer
 {
     /**
      * @var string
      */
-    private $name;
+    private $column;
 
     /**
      * @var array
@@ -46,9 +46,11 @@ class ExpandNameTransformer extends AbstractTransformer
      */
     public function transform(DataSet $input): DataSet
     {
+        // @TODO: Chech that type of column is JSON.
+
         return $this->map($input, function ($item) {
-            $value = $this->getValue($item, $this->name);
-            unset($item[$this->name]);
+            $value = $this->getValue($item, $this->column);
+            unset($item[$this->column]);
 
             foreach ($this->map as $name => $propertyPath) {
                 $item[$name] = $this->getValue($value, $propertyPath);

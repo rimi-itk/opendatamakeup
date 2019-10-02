@@ -10,7 +10,6 @@
 
 namespace App\Transformer;
 
-use App\Data\DataSet;
 use App\Transformer\Exception\InvalidArgumentException;
 
 class TransformerManager
@@ -35,17 +34,16 @@ class TransformerManager
     /**
      * @return AbstractTransformer[]
      */
-    public function getTransformers()
+    public function getTransformers(): array
     {
         return $this->transformers;
     }
 
     /**
-     * @param string $name
+     * @param string     $name
+     * @param array|null $options
      *
      * @return AbstractTransformer
-     *
-     * @throws InvalidArgumentException
      */
     public function getTransformer(string $name, array $options = null): AbstractTransformer
     {
@@ -65,19 +63,5 @@ class TransformerManager
         }
 
         return $transformer;
-    }
-
-    public function runTransformers(DataSet $input, array $transformers)
-    {
-        $result = $input;
-        foreach ($transformers as $transformer) {
-            if (!$transformer instanceof AbstractTransformer) {
-                $transformer = $this->getTransformer($transformer['name'])
-                    ->setOptions($transformer['configuration']);
-            }
-            $result = $transformer->transform($result);
-        }
-
-        return $result;
     }
 }

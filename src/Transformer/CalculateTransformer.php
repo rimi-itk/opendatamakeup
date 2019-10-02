@@ -21,11 +21,11 @@ use Doctrine\DBAL\Types\Type;
  * @Transform(
  *     id="calculate",
  *     name="Calculate",
- *     description="Calculates (simple) stuff",
+ *     description="",
  *     options={
- *         "name": @Option(type="string"),
+ *         "name": @Option(type="string", description="The column to put the expression result into"),
  *         "expression": @Option(type="string"),
- *         "type": @Option(type="type"),
+ *         "type": @Option(type="type", description="The type of the expression result"),
  *     }
  * )
  */
@@ -47,9 +47,7 @@ class CalculateTransformer extends AbstractTransformer
     private $type;
 
     /**
-     * @param DataSet $input
-     *
-     * @return DataSet
+     * {@inheritdoc}
      */
     public function transform(DataSet $input): DataSet
     {
@@ -89,6 +87,8 @@ class CalculateTransformer extends AbstractTransformer
      * @param string $expression
      *
      * @return array
+     *
+     * @throws InvalidNameException
      */
     private function getQuoteNamesInExpression(string $expression, DataSet $dataSet): array
     {

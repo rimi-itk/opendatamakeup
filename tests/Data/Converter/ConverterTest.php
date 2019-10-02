@@ -12,20 +12,20 @@ namespace App\Tests\Data\Converter;
 
 use App\Data\Converter\Converter;
 use App\Data\DataSet;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\ContainerTestCase;
 
-class ConverterTest extends KernelTestCase
+class ConverterTest extends ContainerTestCase
 {
     /** @var Converter */
     private $converter;
 
-    protected function setUp(): void
+    private function converter()
     {
-        self::bootKernel();
+        if (null === $this->converter) {
+            $this->converter = $this->getContainer()->get(Converter::class);
+        }
 
-        // @see https://symfony.com/blog/new-in-symfony-4-1-simpler-service-testing
-        $container = self::$container;
-        $this->converter = $container->get(Converter::class);
+        return $this->converter;
     }
 
     /**
@@ -41,7 +41,7 @@ class ConverterTest extends KernelTestCase
             $this->expectExceptionObject($expected);
         }
 
-        $actual = $this->converter->toTable($data, $key);
+        $actual = $this->converter()->toTable($data, $key);
         $this->assertSame($expected->getColumns(), $actual->getColumns(), 'columns');
         $this->assertSame($expected->getItems(), $actual->getItems(), 'columns');
     }
@@ -54,7 +54,7 @@ class ConverterTest extends KernelTestCase
      */
     public function testToArray(DataSet $table, array $expected): void
     {
-        $actual = $this->converter->toArray($table);
+        $actual = $this->converter()->toArray($table);
 
         $this->assertSame($expected, $actual);
     }

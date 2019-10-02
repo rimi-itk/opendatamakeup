@@ -103,7 +103,7 @@ abstract class AbstractTransformer
             $this->checkType($name, $option['type']);
             $configurationName = $option['name'] ?? $name;
             if (!property_exists($this, $name)) {
-                throw new InvalidArgumentException(sprintf('Property "%s" does not exist on %s.', $name, self::class));
+                throw new InvalidArgumentException(sprintf('Property "%s" does not exist on %s.', $name, static::class));
             }
             $property = new \ReflectionProperty($this, $name);
             $property->setAccessible(true);
@@ -240,6 +240,16 @@ abstract class AbstractTransformer
                 case 'array':
                     if (!$this->isArray($value)) {
                         throw new InvalidConfigurationException('Must be an array: '.$key);
+                    }
+                    break;
+                case 'column':
+                    if (!$this->isString($value)) {
+                        throw new InvalidConfigurationException('Must be a column: '.$key);
+                    }
+                    break;
+                case 'columns':
+                    if (!$this->isArray($value)) {
+                        throw new InvalidConfigurationException('Must be a list of columns: '.$key);
                     }
                     break;
                 case 'map':

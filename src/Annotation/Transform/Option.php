@@ -23,7 +23,7 @@ class Option implements \JsonSerializable
     /**
      * @Required
      *
-     * @Enum({"string", "array", "map", "bool", "int", "type"})
+     * @Enum({"column", "columns", "string", "map", "bool", "int", "type"})
      *
      * @var string
      */

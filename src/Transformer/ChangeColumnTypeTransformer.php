@@ -20,19 +20,19 @@ use Doctrine\DBAL\Types\Type;
  * @Transform(
  *     id="change_type",
  *     name="Change type",
- *     description="Change type of a column",
+ *     description="Change type of columns",
  *     options={
- *         "names": @Option(type="array"),
+ *         "columns": @Option(type="columns"),
  *         "type": @Option(type="type")
  *     }
  * )
  */
-class ChangeTypeTransformer extends AbstractTransformer
+class ChangeColumnTypeTransformer extends AbstractTransformer
 {
     /**
      * @var array
      */
-    private $names;
+    private $columns;
 
     /**
      * @var string
@@ -47,8 +47,8 @@ class ChangeTypeTransformer extends AbstractTransformer
         $newColumns = clone $columns;
 
         $type = $this->getType($this->type);
-        foreach ($this->names as $name) {
-            $newColumns[$name] = new Column($name, $type);
+        foreach ($this->columns as $column) {
+            $newColumns[$column] = new Column($column, $type);
         }
 
         $output = $input->copy($newColumns->toArray())

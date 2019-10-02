@@ -59,15 +59,19 @@ birthday
 03-08-63
 CSV
                 ),
-                $this->buildFromData($this->getTableName('_expected'), [
-                    ['birthday' => '1975-05-23'],
-                    ['birthday' => '1963-08-03'],
-                ], [
+                $this->buildFromData(
+                    $this->getTableName('_expected'),
                     [
-                        'name' => 'birthday',
-                        'type' => Type::STRING,
+                        ['birthday' => '1975-05-23'],
+                        ['birthday' => '1963-08-03'],
                     ],
-                ]),
+                    [
+                        [
+                            'name' => 'birthday',
+                            'type' => Type::STRING,
+                        ],
+                    ]
+                ),
             ],
         ];
     }

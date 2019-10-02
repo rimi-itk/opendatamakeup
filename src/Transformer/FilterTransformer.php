@@ -20,7 +20,7 @@ use App\Data\DataSet;
  *     name="Filter",
  *     description="Filter",
  *     options={
- *         "key": @Option(type="string"),
+ *         "column": @Option(type="column"),
  *         "match": @Option(type="string"),
  *         "partial": @Option(type="bool", required=false, default=false),
  *         "ignoreCase": @Option(type="bool", required=false, default=false, name="ignore_case"),
@@ -34,7 +34,7 @@ class FilterTransformer extends AbstractTransformer
     /**
      * @var string
      */
-    private $key;
+    private $column;
 
     /**
      * @var string
@@ -66,7 +66,7 @@ class FilterTransformer extends AbstractTransformer
         $output = $input->copy()->createTable();
 
         foreach ($input->rows() as $row) {
-            $value = $this->getValue($row, $this->key);
+            $value = $this->getValue($row, $this->column);
             $isMatch = false;
             if ($this->regexp) {
                 throw new \RuntimeException(__METHOD__.' not implemented');

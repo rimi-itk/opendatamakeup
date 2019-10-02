@@ -11,46 +11,13 @@
 namespace App\Tests\Data;
 
 use App\Data\DataSet;
-use App\Data\DataSetManager;
 use App\Data\Exception\InvalidNameException;
+use App\Tests\ContainerTestCase;
 use App\Transformer\Exception\AbstractTransformerException;
-use App\Transformer\TransformerManager;
 use Doctrine\DBAL\Types\Type;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DataSetTest extends KernelTestCase
+class DataSetTest extends ContainerTestCase
 {
-    /** @var DataSetManager */
-    private $dataSetManager;
-
-    /**
-     * @see https://stackoverflow.com/a/42161440
-     * @see https://symfony.com/blog/new-in-symfony-4-1-simpler-service-testing
-     *
-     * @return TransformerManager
-     */
-    protected function dataSetManager(): DataSetManager
-    {
-        if (null === $this->dataSetManager) {
-            $this->dataSetManager = $this->getContainer()->get(DataSetManager::class);
-        }
-
-        return $this->dataSetManager;
-    }
-
-    /**
-     * @return ContainerInterface
-     */
-    protected function getContainer(): ContainerInterface
-    {
-        if (null === static::$container) {
-            static::bootKernel();
-        }
-
-        return static::$container;
-    }
-
     /**
      * @dataProvider dataProviderCreateFromCsv
      *

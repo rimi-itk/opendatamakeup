@@ -10,11 +10,11 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\ChangeTypeTransformer;
+use App\Transformer\ChangeColumnTypeTransformer;
 
-class ChangeTypeTransformerTest extends AbstractTransformerTest
+class ChangeColumnTypeTransformerTest extends AbstractTransformerTest
 {
-    protected static $transformer = ChangeTypeTransformer::class;
+    protected static $transformer = ChangeColumnTypeTransformer::class;
 
     public function dataProvider(): array
     {

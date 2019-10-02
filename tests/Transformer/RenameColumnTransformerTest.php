@@ -11,11 +11,11 @@
 namespace App\Tests\Transformer;
 
 use App\Transformer\Exception\InvalidKeyException;
-use App\Transformer\RenameTransformer;
+use App\Transformer\RenameColumnTransformer;
 
-class RenameTransformerTest extends AbstractTransformerTest
+class RenameColumnTransformerTest extends AbstractTransformerTest
 {
-    protected static $transformer = RenameTransformer::class;
+    protected static $transformer = RenameColumnTransformer::class;
 
     public function dataProvider(): array
     {

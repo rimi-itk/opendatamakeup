@@ -11,20 +11,16 @@
 namespace App\Tests\Transformer;
 
 use App\Data\DataSetManager;
+use App\Tests\ContainerTestCase;
 use App\Transformer\TransformerManager;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Yaml\Yaml;
 
-class TransformTest extends KernelTestCase
+class TransformTest extends ContainerTestCase
 {
     public function test(): void
     {
-        self::bootKernel();
-
-        // @see https://symfony.com/blog/new-in-symfony-4-1-simpler-service-testing
-        $container = self::$container;
-        $manager = $container->get(TransformerManager::class);
-        $dataSetManager = $container->get(DataSetManager::class);
+        $manager = $this->get(TransformerManager::class);
+        $dataSetManager = $this->get(DataSetManager::class);
 
         $dir = __DIR__.'/Tests';
         $filenames = glob($dir.'/test*.yaml');

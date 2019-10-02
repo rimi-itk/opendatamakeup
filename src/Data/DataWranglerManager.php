@@ -10,21 +10,24 @@
 
 namespace App\Data;
 
-use App\Entity\DataSource;
+use App\Data\DataSource\DataSourceManager;
 use App\Entity\DataWrangler;
 use App\Transformer\TransformerManager;
-use Symfony\Component\HttpClient\HttpClient;
 
 class DataWranglerManager
 {
+    /** @var DataSourceManager */
+    protected $dataSourceManager;
+
     /** @var DataSetManager */
     protected $dataSetManager;
 
     /** @var TransformerManager */
     protected $transformerManager;
 
-    public function __construct(DataSetManager $dataSetManager, TransformerManager $transformerManager)
+    public function __construct(DataSourceManager $dataSourceManager, DataSetManager $dataSetManager, TransformerManager $transformerManager)
     {
+        $this->dataSourceManager = $dataSourceManager;
         $this->dataSetManager = $dataSetManager;
         $this->transformerManager = $transformerManager;
     }
@@ -73,57 +76,11 @@ class DataWranglerManager
         $dataSets = [];
 
         foreach ($dataWrangler->getDataSources() as $index => $dataSource) {
-            $data = $this->getData($dataSource);
+            $data = $this->dataSourceManager->getData($dataSource);
             $dataSet = $this->dataSetManager->createDataSetFromData($dataWrangler->getId().'_'.$index, $data);
             $dataSets[$dataSource->getId()] = $dataSet;
         }
 
         return $dataSets;
-    }
-
-    protected function getData(DataSource $dataSource)
-    {
-        [$url, $type] = [$dataSource->getUrl(), $dataSource->getType()];
-        $content = null;
-        if (preg_match('@^file://(?P<path>.+)@', $url, $matches)) {
-            $path = $matches['path'];
-            if (!file_exists($path)) {
-                return null;
-            }
-            $content = file_get_contents($path);
-        } else {
-            $httpClient = HttpClient::create();
-            $response = $httpClient->request('GET', $url);
-
-            if (200 !== $response->getStatusCode()) {
-                return null;
-            }
-            try {
-                $content = $response->getContent();
-            } catch (ExceptionInterface $e) {
-                return null;
-            }
-        }
-
-        switch ($type) {
-            case DataSource::TYPE_CSV:
-                $lines = explode(PHP_EOL, $content);
-                // Ignore empty lines.
-                $lines = array_filter(array_map('trim', $lines));
-                $rows = array_map('str_getcsv', $lines);
-                if (\count($rows) < 2) {
-                    return [];
-                }
-                $headers = array_shift($rows);
-
-                return array_map(static function ($values) use ($headers) {
-                    return array_combine($headers, $values);
-                }, $rows);
-                break;
-            case DataSource::TYPE_JSON:
-                return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-            default:
-                throw new \InvalidArgumentException(sprintf('Invalid data source type: %s', $type));
-        }
     }
 }

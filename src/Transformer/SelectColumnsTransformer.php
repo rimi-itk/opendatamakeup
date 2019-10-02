@@ -20,19 +20,19 @@ use Doctrine\DBAL\Schema\Column;
  * @Transform(
  *     id="select_names",
  *     name="Select columns",
- *     description="Removes one or more keys from the dataset",
+ *     description="Selects (or excludes) one or more columns",
  *     options={
- *         "names": @Option(type="array"),
+ *         "columns": @Option(type="columns"),
  *         "include": @Option(type="bool", required=false, default=true)
  *     }
  * )
  */
-class SelectNamesTransformer extends AbstractTransformer
+class SelectColumnsTransformer extends AbstractTransformer
 {
     /**
      * @var array
      */
-    private $names;
+    private $columns;
 
     /**
      * @var bool
@@ -50,12 +50,12 @@ class SelectNamesTransformer extends AbstractTransformer
     {
         $columns = $input->getColumns();
         $names = $columns->getKeys();
-        $diff = array_diff($this->names, $names);
+        $diff = array_diff($this->columns, $names);
         if (!empty($diff)) {
             throw new InvalidKeyException('invalid keys: '.implode(', ', $diff));
         }
 
-        $namesToKeep = $this->include ? $this->names : array_diff($names, $this->names);
+        $namesToKeep = $this->include ? $this->columns : array_diff($names, $this->columns);
 
         $newColumns = $columns->filter(static function ($value, $name) use ($namesToKeep) {
             return \in_array($name, $namesToKeep, true);

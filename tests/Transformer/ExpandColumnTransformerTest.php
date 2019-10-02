@@ -10,11 +10,11 @@
 
 namespace App\Tests\Transformer;
 
-use App\Transformer\ExpandNameTransformer;
+use App\Transformer\ExpandColumnTransformer;
 
-class ExpandNameTransformerTest extends AbstractTransformerTest
+class ExpandColumnTransformerTest extends AbstractTransformerTest
 {
-    protected static $transformer = ExpandNameTransformer::class;
+    protected static $transformer = ExpandColumnTransformer::class;
 
     public function dataProvider(): array
     {

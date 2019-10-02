@@ -10,23 +10,52 @@
 
 namespace App\Data\DataSource;
 
-use App\Data\DataSet;
-use App\Data\DataSetManager;
+use App\Entity\DataSource;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataSourceManager
 {
-    /** @var DataSetManager */
-    private $dataSetManager;
+    /** @var HttpClientInterface */
+    private $client;
 
-    public function __construct(DataSetManager $dataSetManager)
+    public function __construct(HttpClientInterface $client)
     {
-        $this->dataSetManager = $dataSetManager;
+        $this->client = $client;
     }
 
-    public function createDataSet(string $name, AbstractDataSource $dataSource): DataSet
+    public function setClient(HttpClientInterface $client): self
     {
-        $data = $dataSource->getData();
+        $this->client = $client;
 
-        return $this->dataSetManager->createDataSetFromData($name, $data);
+        return $this;
+    }
+
+    public function getData(DataSource $dataSource)
+    {
+        [$url, $type] = [$dataSource->getUrl(), $dataSource->getType()];
+        $content = null;
+        $response = $this->client->request('GET', $url);
+        $content = $response->getContent();
+
+        switch ($type) {
+            case DataSource::TYPE_CSV:
+                $lines = explode(PHP_EOL, $content);
+                // Ignore empty lines.
+                $lines = array_filter(array_map('trim', $lines));
+                $rows = array_map('str_getcsv', $lines);
+                if (\count($rows) < 2) {
+                    return [];
+                }
+                $headers = array_shift($rows);
+
+                return array_map(static function ($values) use ($headers) {
+                    return array_combine($headers, $values);
+                }, $rows);
+                break;
+            case DataSource::TYPE_JSON:
+                return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            default:
+                throw new \InvalidArgumentException(sprintf('Invalid data source type: %s', $type));
+        }
     }
 }

@@ -29,7 +29,7 @@ use Doctrine\DBAL\Schema\Column;
  *     }
  * )
  */
-class RenameTransformer extends AbstractTransformer
+class RenameColumnTransformer extends AbstractTransformer
 {
     /**
      * @var string

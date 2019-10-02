@@ -188,6 +188,13 @@ class DataSet
 
         while ($row = $this->rowsStatement->fetch()) {
             array_walk($row, function (&$value, $name) use ($columns) {
+                if (!isset($columns[$name])) {
+                    var_export([
+                        'name' => $name,
+                        'columns' => $columns,
+                        $columns[$name],
+                    ]);
+                }
                 $value = $columns[$name]->getType()->convertToPHPValue($value, $this->platform);
             });
             yield $row;

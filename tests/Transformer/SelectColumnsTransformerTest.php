@@ -11,21 +11,21 @@
 namespace App\Tests\Transformer;
 
 use App\Transformer\Exception\InvalidKeyException;
-use App\Transformer\SelectNamesTransformer;
+use App\Transformer\SelectColumnsTransformer;
 
-class SelectNamesTransformerTest extends AbstractTransformerTest
+class SelectColumnsTransformerTest extends AbstractTransformerTest
 {
-    protected static $transformer = SelectNamesTransformer::class;
+    protected static $transformer = SelectColumnsTransformer::class;
 
     public function dataProvider(): array
     {
         return [
             [
                 [
-                    'names' => ['first name'],
+                    'columns' => ['first name'],
                 ],
                 $this->buildFromCSV(
-                    self::class,
+                    $this->getTableName(),
                     <<<'CSV'
 name
 Mikkel
@@ -36,10 +36,10 @@ CSV
 
             [
                 [
-                    'names' => ['name'],
+                    'columns' => ['name'],
                 ],
                 $this->buildFromCSV(
-                    self::class,
+                    $this->getTableName(),
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
@@ -56,11 +56,11 @@ CSV
 
             [
                 [
-                    'names' => ['name'],
+                    'columns' => ['name'],
                     'include' => false,
                 ],
                 $this->buildFromCSV(
-                    self::class,
+                    $this->getTableName(),
                     <<<'CSV'
 name,birthday
 Mikkel,1975-05-23
