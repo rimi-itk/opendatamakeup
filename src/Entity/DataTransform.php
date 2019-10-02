@@ -14,10 +14,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as AppAssert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\DataTransformRepository")
  * @Gedmo\Loggable
+ * @AppAssert\ValidTransform
  */
 class DataTransform
 {
@@ -45,12 +48,14 @@ class DataTransform
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      * @Gedmo\Versioned
      */
     private $transformer;
 
     /**
      * @ORM\Column(type="json")
+     * @Assert\NotBlank
      * @Gedmo\Versioned
      */
     private $transformerArguments = [];

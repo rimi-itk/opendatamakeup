@@ -12,20 +12,53 @@ namespace App\Data;
 
 use App\Entity\DataSource;
 use App\Entity\DataWrangler;
+use App\Transformer\TransformerManager;
+use Symfony\Component\HttpClient\HttpClient;
 
 class DataWranglerManager
 {
     /** @var DataSetManager */
     protected $dataSetManager;
 
-    public function __construct(DataSetManager $dataSetManager)
+    /** @var TransformerManager */
+    protected $transformerManager;
+
+    public function __construct(DataSetManager $dataSetManager, TransformerManager $transformerManager)
     {
         $this->dataSetManager = $dataSetManager;
+        $this->transformerManager = $transformerManager;
     }
 
-    public function run(DataWrangler $dataWrangler)
+    /**
+     * @param DataWrangler $dataWrangler
+     * @param array        $options
+     *
+     * @return DataSet[]
+     */
+    public function run(DataWrangler $dataWrangler, array $options = [])
     {
+        if ($dataWrangler->getDataSources()->count() > 1) {
+            throw new \RuntimeException('More than one data source not yet supported.');
+        }
+
         $dataSets = $this->getDataSets($dataWrangler);
+        $dataSet = reset($dataSets);
+
+        $results = [$dataSet];
+        $steps = $options['steps'] ?? PHP_INT_MAX;
+        foreach ($dataWrangler->getTransforms() as $index => $transform) {
+            if ($index >= $steps - 1) {
+                break;
+            }
+            $transformer = $this->transformerManager->getTransformer(
+                $transform->getTransformer(),
+                $transform->getTransformerArguments()
+            );
+            $dataSet = $transformer->transform($dataSet);
+            $results[] = $dataSet;
+        }
+
+        return $results;
     }
 
     /**
@@ -39,9 +72,9 @@ class DataWranglerManager
     {
         $dataSets = [];
 
-        foreach ($dataWrangler->getDataSources() as $dataSource) {
+        foreach ($dataWrangler->getDataSources() as $index => $dataSource) {
             $data = $this->getData($dataSource);
-            $dataSet = $this->dataSetManager->createDataSetFromData($data);
+            $dataSet = $this->dataSetManager->createDataSetFromData($dataWrangler->getId().'_'.$index, $data);
             $dataSets[$dataSource->getId()] = $dataSet;
         }
 

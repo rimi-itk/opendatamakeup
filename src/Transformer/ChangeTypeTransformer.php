@@ -46,7 +46,7 @@ class ChangeTypeTransformer extends AbstractTransformer
         // @TODO Check that type change makes sense without data loss.
         $newColumns = clone $columns;
 
-        $type = Type::getType($this->type);
+        $type = $this->getType($this->type);
         foreach ($this->names as $name) {
             $newColumns[$name] = new Column($name, $type);
         }

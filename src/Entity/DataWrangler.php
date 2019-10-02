@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\DataWranglerRepository")
@@ -40,12 +41,14 @@ class DataWrangler
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      * @Gedmo\Versioned
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\DataTransform", mappedBy="dataWrangler", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid
      */
     private $transforms;
 

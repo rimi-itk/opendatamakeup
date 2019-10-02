@@ -217,6 +217,9 @@ class DataSet
             foreach ($row as $name => $value) {
                 /** @var Type $type */
                 $type = $types[$name];
+                if (!is_scalar($value)) {
+                    $value = json_encode($value);
+                }
                 $statement->bindValue($index + 1, $type->convertToPHPValue($value, $this->platform), $type);
                 ++$index;
             }
@@ -334,7 +337,9 @@ class DataSet
         foreach ($columns as $column) {
             $name = $column instanceof Column ? $column->getName() : $column['name'];
             $type = $column instanceof Column ? $column->getType()->getName() : $column['type'];
-            $table->addColumn($this->quoteName($name), $type);
+            $table->addColumn($this->quoteName($name), $type, [
+                'notnull' => false,
+            ]);
         }
 
         return $table;
@@ -455,9 +460,9 @@ class DataSet
             Type::FLOAT => 0,
             Type::DATETIME => 0,
             Type::DATE => 0,
-            Type::STRING => 0,
             Type::JSON => 0,
         ];
+        $maxLength = 0;
         foreach ($values as $value) {
             if (filter_var($value, FILTER_VALIDATE_INT)) {
                 ++$votes[Type::INTEGER];
@@ -465,18 +470,15 @@ class DataSet
             if (filter_var($value, FILTER_VALIDATE_FLOAT)) {
                 ++$votes[Type::FLOAT];
             }
-            if (\is_string($value) && !empty($value)) {
-//                // @TODO: Distinguish between DATE and DATETIME.
-//                try {
-//                    new \DateTime($value);
-//                    ++$votes[Type::DATETIME];
-//                } catch (\Exception $exception) {
-//                }
-                // @TODO: Detect JSON.
+            if (!is_scalar($value)) {
+                ++$votes[Type::JSON];
             }
-
-            // String is the most generic type.
-            ++$votes[Type::STRING];
+            if (\is_string($value) && !empty($value)) {
+                $length = \strlen($value);
+                if ($length > $maxLength) {
+                    $maxLength = $length;
+                }
+            }
         }
 
         foreach ($votes as $type => $count) {
@@ -485,6 +487,6 @@ class DataSet
             }
         }
 
-        return Type::STRING;
+        return $maxLength > 255 ? Type::TEXT : Type::STRING;
     }
 }

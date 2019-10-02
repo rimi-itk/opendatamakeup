@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <a class="btn btn-secondary" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({steps: null})) }}">{{ 'Run all steps'|trans }}</a>
+    <ol>
+    {% for data_set in data_sets %}
+        <li>
+            <a href="#{{ data_set.name }}">{{ data_set.name }}</a>
+            <a class="btn btn-secondary" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({steps: loop.index})) }}">{{ 'Run to this step'|trans }}</a>
+        </li>
+    {% endfor %}
+    </ol>
+
+    <div class="container-fluid">
+        {% for data_set in data_sets %}
+        <fieldset id="{{ data_set.name }}">
+            <legend>{{ data_set.name }}</legend>
+
+            <table class="table">
+            {% for row in data_set.rows %}
+                {% if loop.first %}
+                    <tr>
+                        {% for column in data_set.columns %}
+                            <th>{{ column.name }}:{{ column.type }}</th>
+                        {%  endfor %}
+                    </tr>
+                {% endif %}
+                <tr>
+                    {% for value in row %}
+                        <td>{{ value is iterable ? value|json_encode : value }}</td>
+                    {%  endfor %}
+                </tr>
+            {% endfor %}
+            </table>
+        </fieldset>
+    {% endfor %}
+
+    </div>
+{% endblock %}

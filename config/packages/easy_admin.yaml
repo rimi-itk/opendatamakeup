@@ -20,7 +20,11 @@ easy_admin:
 
         DataWrangler:
             class: App\Entity\DataWrangler
+            controller: App\Controller\DataWranglerController
+
             list:
+                actions: [run]
+
                 fields:
                     - property: name
                     - property: dataSources
@@ -31,3 +35,9 @@ easy_admin:
                     - property: name
                     - property: dataSources
                     - property: transforms
+                      type: collection
+                      type_options:
+                            entry_type: App\Form\Type\DataTransformType
+                            allow_delete: true
+                            allow_add: true
+                            by_reference: false

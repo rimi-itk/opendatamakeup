@@ -1,17 +1,52 @@
 -
+    id: '00000000-0000-0000-0000-000000000000'
     name: Test
     dataSources:
         - '@data_source:test'
     transforms:
-        - name: Change column type
-          transformer: change_type
+        - name: Select columns
+          transformer: App\Transformer\SelectNamesTransformer
           transformerArguments:
-              - columns: [name]
-                type: date
-        - name: Change column type
-          transformer: change_type
+              names: [name, description]
+#        - name: Change column type
+#          transformer: App\Transformer\ChangeTypeTransformer
+#          transformerArguments:
+#              columns: [name]
+#              type: date
+
+-
+    id: '00000000-0000-0000-0000-111111111111'
+    name: Another test
+    dataSources:
+        - '@data_source:test'
+    transforms:
+        - name: Select columns
+          transformer: App\Transformer\SelectNamesTransformer
           transformerArguments:
-              - columns: [name]
-                type: date
+              names: ['@id', name]
 
+        - name: Rename
+          transformer: App\Transformer\RenameTransformer
+          transformerArguments:
+              from: '@id'
+              to: 'id'
 
+        - name: Replace
+          transformer: App\Transformer\ReplaceTransformer
+          transformerArguments:
+              names: [id]
+              search: '/api/events/'
+              replace: ''
+
+        - name: Convert
+          transformer: App\Transformer\ChangeTypeTransformer
+          transformerArguments:
+              names: [id]
+              type: 'int'
+
+        - name: Calculate
+          transformer: App\Transformer\CalculateTransformer
+          transformerArguments:
+              name: half
+              type: float
+              expression: id/2

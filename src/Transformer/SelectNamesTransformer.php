@@ -17,11 +17,9 @@ use App\Transformer\Exception\InvalidKeyException;
 use Doctrine\DBAL\Schema\Column;
 
 /**
- * Class RemoveKeysTransformer.
- *
  * @Transform(
  *     id="select_names",
- *     name="Remove keys",
+ *     name="Select columns",
  *     description="Removes one or more keys from the dataset",
  *     options={
  *         "names": @Option(type="array"),

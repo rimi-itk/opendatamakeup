@@ -12,7 +12,10 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Yaml\Yaml;
 
 abstract class AbstractFixture extends Fixture
@@ -25,6 +28,13 @@ abstract class AbstractFixture extends Fixture
 
     /** @var PropertyAccessor */
     protected $accessor;
+
+    protected $validator;
+
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
 
     /**
      * @param string|null $fixtureName
@@ -58,10 +68,30 @@ abstract class AbstractFixture extends Fixture
         $fixtures = $this->loadFixture();
         $this->accessor = new PropertyAccessor();
 
+        $metadata = $this->getMetadata($this->entityClass);
         foreach ($fixtures as $index => $data) {
-            $entity = $this->buildEntity($data);
+            $entity = $this->buildEntity($data, $metadata);
             if (null !== $entity) {
+                $idGenerator = null;
+                $idGeneratorType = null;
+                // If id has been set on entity we use that.
+                // @TODO Use $metadata->getIdentifierFieldNames to check if all id fields have been set.
+                if (method_exists($entity, 'getId') && null !== $entity->getId()) {
+                    $idGenerator = $metadata->idGenerator;
+                    $idGeneratorType = $metadata->generatorType;
+                    $metadata->setIdGenerator(new AssignedGenerator());
+                    $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE);
+                }
+                $errors = $this->validator->validate($entity);
+                if (\count($errors) > 0) {
+                    throw new \RuntimeException((string) $errors);
+                }
                 $this->persist($entity, $manager);
+                if (null !== $idGenerator && null !== $idGeneratorType) {
+                    // Restore the id generator.
+                    $metadata->setIdGenerator($idGenerator);
+                    $metadata->setIdGeneratorType($idGeneratorType);
+                }
             }
 
             if (isset($data['@id'])) {
@@ -76,13 +106,10 @@ abstract class AbstractFixture extends Fixture
         $manager->persist($object);
     }
 
-    protected function buildEntity(array $data, string $entityClass = null)
+    protected function buildEntity(array $data, ClassMetadata $metadata)
     {
-        if (null === $entityClass) {
-            $entityClass = $this->entityClass;
-        }
-        $entity = new $entityClass();
-        $metadata = $this->getMetadata($entity);
+        $className = $metadata->getName();
+        $entity = new $className();
         foreach ($data as $propertyPath => $value) {
             if (0 === strpos($propertyPath, '@')) {
                 continue;
@@ -96,7 +123,9 @@ abstract class AbstractFixture extends Fixture
                         if (\is_string($value)) {
                             return $this->getEntityReference($value);
                         } else {
-                            return $this->buildEntity($value, $targetEntityClass);
+                            $metadata = $this->getMetadata($targetEntityClass);
+
+                            return $this->buildEntity($value, $metadata);
                         }
                     }, $value);
                 } else {
@@ -107,18 +136,34 @@ abstract class AbstractFixture extends Fixture
             }
 
             try {
-                $this->accessor->setValue($entity, $propertyPath, $value);
+                if ($metadata->isIdentifier($propertyPath)) {
+                    $idProperty = new \ReflectionProperty($entity, $propertyPath);
+                    $idProperty->setAccessible(true);
+                    $idProperty->setValue($entity, $value);
+                } else {
+                    $this->accessor->setValue($entity, $propertyPath, $value);
+                }
             } catch (\Exception $exception) {
-                throw new \RuntimeException(sprintf('Cannot set property %s.%s on entity %s', \get_class($entity), $propertyPath, $entity));
+                throw new \RuntimeException(sprintf('Cannot set property %s.%s on entity', \get_class($entity), $propertyPath));
             }
         }
 
         return $entity;
     }
 
-    protected function getMetadata($entity)
+    /**
+     * @param $entity
+     *
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     */
+    protected function getMetadata($entity = null)
     {
-        return $this->referenceRepository->getManager()->getClassMetadata(\get_class($entity));
+        if (null === $entity) {
+            $entity = $this->entityClass;
+        }
+        $className = \is_object($entity) ? \get_class($entity) : $entity;
+
+        return $this->referenceRepository->getManager()->getClassMetadata($className);
     }
 
     protected function getEntityReference($reference)
