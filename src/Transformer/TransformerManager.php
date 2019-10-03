@@ -28,7 +28,7 @@ class TransformerManager
     {
         // Add transformer ids (as well as class names).
         $this->transformers = $transformers;
-        $this->aliases = array_combine(array_column($transformers, 'id'), array_keys($transformers));
+        $this->aliases = array_combine(array_column($transformers, 'alias'), array_keys($transformers));
     }
 
     /**

@@ -13,12 +13,13 @@ namespace App\Transformer;
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
 use App\Data\DataSet;
+use App\Data\Exception\InvalidColumnException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 
 /**
  * @Transform(
- *     id="change_type",
+ *     alias="change_type",
  *     name="Change type",
  *     description="Change type of columns",
  *     options={
@@ -48,6 +49,9 @@ class ChangeColumnTypeTransformer extends AbstractTransformer
 
         $type = $this->getType($this->type);
         foreach ($this->columns as $column) {
+            if (!isset($newColumns[$column])) {
+                throw new InvalidColumnException($column);
+            }
             $newColumns[$column] = new Column($column, $type);
         }
 
@@ -63,5 +67,10 @@ class ChangeColumnTypeTransformer extends AbstractTransformer
         );
 
         return $output->buildFromSQL($sql);
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

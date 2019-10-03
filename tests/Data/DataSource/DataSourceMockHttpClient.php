@@ -15,9 +15,9 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class DataSourceMockHttpClient extends MockHttpClient
 {
-    public function __construct($responseFactory = null, string $baseUri = null)
+    public function __construct($responseFactory = null, string $baseUri = 'http://test/')
     {
-        parent::__construct([$this, 'callback']);
+        parent::__construct([$this, 'callback'], $baseUri);
     }
 
     public function callback($method, $url, $options)

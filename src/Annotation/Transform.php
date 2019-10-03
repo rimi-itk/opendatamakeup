@@ -26,7 +26,7 @@ class Transform implements \JsonSerializable
      *
      * @var string
      */
-    public $id;
+    public $alias;
 
     /**
      * @Required
@@ -49,6 +49,11 @@ class Transform implements \JsonSerializable
      */
     public $options;
 
+    /**
+     * @var string
+     */
+    public $example;
+
     public function getOptions()
     {
         return json_decode(json_encode($this->options, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
@@ -67,10 +72,11 @@ class Transform implements \JsonSerializable
         }
 
         return [
-            'id' => $this->id,
+            'alias' => $this->alias,
             'name' => $this->name,
             'description' => $this->description,
             'options' => $options,
+            'example' => $this->example,
         ];
     }
 }

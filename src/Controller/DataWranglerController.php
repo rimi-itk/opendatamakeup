@@ -31,11 +31,11 @@ class DataWranglerController extends AdminController
         $this->dataWranglerManager = $dataWranglerManager;
     }
 
-    public function runAction()
+    public function previewAction()
     {
         $id = $this->request->get('id');
 
-        return $this->redirectToRoute('data_wrangler_run', ['id' => $id]);
+        return $this->redirectToRoute('data_wrangler_preview', ['id' => $id]);
     }
 
     /**
@@ -55,15 +55,15 @@ class DataWranglerController extends AdminController
      * @param DataWrangler $dataWrangler
      *
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Route("/run/{id}", name="run")
+     * @Route("/preview/{id}", name="preview")
      */
-    public function run(Request $request, DataWrangler $dataWrangler)
+    public function preview(Request $request, DataWrangler $dataWrangler)
     {
         $dataSets = $this->dataWranglerManager->run($dataWrangler, [
             'steps' => $request->query->getInt('steps', PHP_INT_MAX),
         ]);
 
-        return $this->render('data_wrangler/run.html.twig', [
+        return $this->render('data_wrangler/preview.html.twig', [
             'data_sets' => $dataSets,
             'data_wrangler' => $dataWrangler,
         ]);

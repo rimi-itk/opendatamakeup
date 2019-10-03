@@ -58,8 +58,31 @@ abstract class AbstractTransformer
         return $this;
     }
 
+    /**
+     * Transform a data set.
+     *
+     * @param DataSet $input
+     *
+     * @return DataSet
+     */
     abstract public function transform(DataSet $input): DataSet;
 
+    /**
+     * Compute columns after applying transform.
+     *
+     * @param array $columns
+     *
+     * @return array
+     */
+    abstract public function transformColumns(array $columns): array;
+
+    /**
+     * Set options on the transformer.
+     *
+     * @param array $options
+     *
+     * @return $this
+     */
     public function setOptions(array $options): self
     {
         $this->options = $options;

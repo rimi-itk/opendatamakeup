@@ -24,7 +24,7 @@ class DataSourceTest extends ContainerTestCase
         $type = 'json';
         $dataSource = (new DataSource())
             ->setUrl($url)
-            ->setType($type);
+            ->setFormat($type);
 
         $path = __DIR__.'/fixtures/'.$path;
 

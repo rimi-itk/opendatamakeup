@@ -13,20 +13,26 @@ namespace App\Transformer;
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
 use App\Data\DataSet;
-use App\Data\Exception\InvalidNameException;
+use App\Data\Exception\InvalidColumnException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 
 /**
  * @Transform(
- *     id="calculate",
+ *     alias="calculate",
  *     name="Calculate",
  *     description="",
  *     options={
  *         "name": @Option(type="string", description="The column to put the expression result into"),
  *         "expression": @Option(type="string"),
  *         "type": @Option(type="type", description="The type of the expression result"),
- *     }
+ *     },
+ *     example="transformer: calculate
+arguments:
+  name: sum of a and b
+  expression: a + b
+  type: float
+ "
  * )
  */
 class CalculateTransformer extends AbstractTransformer
@@ -61,7 +67,7 @@ class CalculateTransformer extends AbstractTransformer
         [$names, $quotedExpression] = $this->getQuoteNamesInExpression($this->expression, $input);
         $invalidNames = array_diff($names, $columns->getKeys());
         if (!empty($invalidNames)) {
-            throw new InvalidNameException('Invalid names: '.implode(', ', $invalidNames));
+            throw new InvalidColumnException('Invalid names: '.implode(', ', $invalidNames));
         }
 
         $output = $input->copy($newColumns->toArray())
@@ -81,6 +87,11 @@ class CalculateTransformer extends AbstractTransformer
         return $output->buildFromSQL($sql);
     }
 
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
+    }
+
     /**
      * Quote names in expression and return the quoted expression along with a list of unquoted names.
      *
@@ -88,7 +99,7 @@ class CalculateTransformer extends AbstractTransformer
      *
      * @return array
      *
-     * @throws InvalidNameException
+     * @throws InvalidColumnException
      */
     private function getQuoteNamesInExpression(string $expression, DataSet $dataSet): array
     {

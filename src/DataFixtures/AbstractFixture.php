@@ -15,6 +15,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -29,10 +30,12 @@ abstract class AbstractFixture extends Fixture
     /** @var PropertyAccessor */
     protected $accessor;
 
+    /** @var ValidatorInterface */
     protected $validator;
 
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(PropertyAccessorInterface $accessor, ValidatorInterface $validator)
     {
+        $this->accessor = $accessor;
         $this->validator = $validator;
     }
 
@@ -66,7 +69,6 @@ abstract class AbstractFixture extends Fixture
         }
 
         $fixtures = $this->loadFixture();
-        $this->accessor = new PropertyAccessor();
 
         $metadata = $this->getMetadata($this->entityClass);
         foreach ($fixtures as $index => $data) {
@@ -106,8 +108,11 @@ abstract class AbstractFixture extends Fixture
         $manager->persist($object);
     }
 
-    protected function buildEntity(array $data, ClassMetadata $metadata)
+    public function buildEntity(array $data, $metadata = null)
     {
+        if (!$metadata instanceof ClassMetadata) {
+            $metadata = $this->getMetadata($metadata);
+        }
         $className = $metadata->getName();
         $entity = new $className();
         foreach ($data as $propertyPath => $value) {
@@ -144,7 +149,7 @@ abstract class AbstractFixture extends Fixture
                     $this->accessor->setValue($entity, $propertyPath, $value);
                 }
             } catch (\Exception $exception) {
-                throw new \RuntimeException(sprintf('Cannot set property %s.%s on entity', \get_class($entity), $propertyPath));
+                throw new \RuntimeException(sprintf('Cannot set property "%s" on entity of type %s', $propertyPath, \get_class($entity)));
             }
         }
 

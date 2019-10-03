@@ -12,8 +12,8 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use FOS\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserFixture extends AbstractFixture
@@ -23,13 +23,13 @@ class UserFixture extends AbstractFixture
     /** @var UserManagerInterface */
     private $userManager;
 
-    public function __construct(ValidatorInterface $validator, UserManagerInterface $userManager)
+    public function __construct(PropertyAccessorInterface $accessor, ValidatorInterface $validator, UserManagerInterface $userManager)
     {
-        parent::__construct($validator);
+        parent::__construct($accessor, $validator);
         $this->userManager = $userManager;
     }
 
-    protected function buildEntity(array $data, ClassMetadata $metadata)
+    public function buildEntity(array $data, $metadata = null)
     {
         $entity = parent::buildEntity($data, $metadata);
 

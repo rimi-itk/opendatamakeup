@@ -33,6 +33,14 @@ class DataWranglerManager
     }
 
     /**
+     * @return DataSetManager
+     */
+    public function getDataSourceManager(): DataSourceManager
+    {
+        return $this->dataSourceManager;
+    }
+
+    /**
      * @param DataWrangler $dataWrangler
      * @param array        $options
      *
@@ -57,7 +65,7 @@ class DataWranglerManager
                 $transform->getTransformer(),
                 $transform->getTransformerArguments()
             );
-            $dataSet = $transformer->transform($dataSet);
+            $dataSet = $transformer->transform($dataSet)->setTransform($transform);
             $results[] = $dataSet;
         }
 

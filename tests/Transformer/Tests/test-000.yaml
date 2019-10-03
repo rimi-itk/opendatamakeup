@@ -1,10 +1,16 @@
-input: test-000.in.csv
+dataSources:
+    -
+        url: test-000.in.csv
+        format: csv
 
 transforms:
     -
-        name: select_names
-        configuration:
-            names: ['birthday']
+        transformer: App\Transformer\SelectColumnsTransformer
+        transformerArguments:
+            columns: ['birthday']
             include: false
 
-expected: test-000.out.csv
+expected:
+    url: test-000.out.csv
+    format: csv
+

@@ -18,7 +18,7 @@ use Doctrine\DBAL\Schema\Column;
 
 /**
  * @Transform(
- *     id="select_names",
+ *     alias="select_names",
  *     name="Select columns",
  *     description="Selects (or excludes) one or more columns",
  *     options={
@@ -73,5 +73,10 @@ class SelectColumnsTransformer extends AbstractTransformer
         );
 
         return $output->buildFromSQL($sql);
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

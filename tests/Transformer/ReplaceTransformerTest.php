@@ -22,7 +22,7 @@ class ReplaceTransformerTest extends AbstractTransformerTest
         return [
             [
                 [
-                    'names' => ['birthday'],
+                    'columns' => ['birthday'],
                     'search' => '75',
                     'replace' => '1975',
                 ],
@@ -46,7 +46,7 @@ CSV
 
             [
                 [
-                    'names' => ['birthday'],
+                    'columns' => ['birthday'],
                     'search' => '/([0-9]{2})-([0-9]{2})-([0-9]{2})/',
                     'replace' => '19\3-\2-\1',
                     'regexp' => true,

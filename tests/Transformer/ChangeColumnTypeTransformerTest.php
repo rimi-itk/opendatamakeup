@@ -21,11 +21,11 @@ class ChangeColumnTypeTransformerTest extends AbstractTransformerTest
         return [
             [
                 [
-                    'names' => ['a', 'b'],
+                    'columns' => ['a', 'b'],
                     'type' => 'float',
                 ],
                 $this->buildFromCSV(
-                    self::class,
+                    $this->getTableName(),
                     <<<'CSV'
 a,b
 1,2

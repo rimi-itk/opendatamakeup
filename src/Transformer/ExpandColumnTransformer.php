@@ -16,7 +16,7 @@ use App\Data\DataSet;
 
 /**
  * @Transform(
- *     id="expand_name",
+ *     alias="expand_name",
  *     name="Expand column",
  *     description="Expand a key into multiple keys",
  *     options={
@@ -46,8 +46,7 @@ class ExpandColumnTransformer extends AbstractTransformer
      */
     public function transform(DataSet $input): DataSet
     {
-        // @TODO: Chech that type of column is JSON.
-
+        // @TODO: Check that type of column is JSON.
         return $this->map($input, function ($item) {
             $value = $this->getValue($item, $this->column);
             unset($item[$this->column]);
@@ -58,5 +57,10 @@ class ExpandColumnTransformer extends AbstractTransformer
 
             return $item;
         });
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

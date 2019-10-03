@@ -1,16 +1,23 @@
-input: test-number.in.csv
+dataSources:
+    -
+        url: test-number.in.csv
+        format: csv
 
 transforms:
     -
-        name: calculate
-        configuration:
+        transformer: App\Transformer\CalculateTransformer
+        transformerArguments:
             name: sum of a and b
+            type: int
             expression: a + b
 
     -
-        name: calculate
-        configuration:
+        transformer: App\Transformer\CalculateTransformer
+        transformerArguments:
             name: mean
+            type: float
             expression: '`sum of a and b` / 2'
 
-expected: test-sum.out.csv
+expected:
+    url: test-sum.out.csv
+    format: csv

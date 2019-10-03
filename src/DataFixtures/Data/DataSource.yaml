@@ -2,6 +2,6 @@
     '@id': data_source:test
     name: Test
     url: https://api.detskeriaarhus.dk/api/events.json
-    type: json
+    format: json
 
 

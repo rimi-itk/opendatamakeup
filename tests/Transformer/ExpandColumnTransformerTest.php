@@ -21,7 +21,7 @@ class ExpandColumnTransformerTest extends AbstractTransformerTest
         return [
             [
                 [
-                    'name' => 'person',
+                    'column' => 'person',
                     'map' => ['name' => 'name'],
                 ],
                 $this->buildFromData(

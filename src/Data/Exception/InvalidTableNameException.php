@@ -10,6 +10,6 @@
 
 namespace App\Data\Exception;
 
-class InvalidNameException extends \Exception
+class InvalidTableNameException extends \Exception
 {
 }

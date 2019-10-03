@@ -43,13 +43,13 @@ abstract class AbstractTransformerTest extends ContainerTestCase
 
     abstract public function dataProvider();
 
+    private $tableCounter = 0;
+
     protected function getTableName(string $suffix = null)
     {
         $name = preg_replace('@^([a-z]+\\\\)+@i', '', static::class);
-
-        if (null !== $suffix) {
-            $name .= $suffix;
-        }
+        $name .= sprintf('%03d', $this->tableCounter);
+        ++$this->tableCounter;
 
         return $name;
     }

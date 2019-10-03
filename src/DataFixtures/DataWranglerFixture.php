@@ -17,6 +17,9 @@ class DataWranglerFixture extends AbstractFixture implements DependentFixtureInt
 {
     protected $entityClass = DataWrangler::class;
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDependencies()
     {
         return [

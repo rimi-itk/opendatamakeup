@@ -16,7 +16,7 @@ use App\Data\DataSet;
 
 /**
  * @Transform(
- *     id="replace",
+ *     alias="replace",
  *     name="Replace",
  *     description="Replace values (only for string columns)",
  *     options={
@@ -78,5 +78,10 @@ class ReplaceTransformer extends AbstractTransformer
         }
 
         return $output;
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

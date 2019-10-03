@@ -11,7 +11,7 @@
 namespace App\Tests\Data;
 
 use App\Data\DataSet;
-use App\Data\Exception\InvalidNameException;
+use App\Data\Exception\InvalidColumnException;
 use App\Tests\ContainerTestCase;
 use App\Transformer\Exception\AbstractTransformerException;
 use Doctrine\DBAL\Types\Type;
@@ -52,7 +52,7 @@ class DataSetTest extends ContainerTestCase
      * @param DataSet                              $second
      * @param DataSet|AbstractTransformerException $expected
      *
-     * @throws \App\Data\Exception\InvalidNameException
+     * @throws \App\Data\Exception\InvalidColumnException
      */
     public function hest_testJoinTables(DataSet $first, string $name, DataSet $second, $expected)
     {
@@ -155,7 +155,7 @@ CSV
                 new DataSet([]),
                 'id',
                 new DataSet([]),
-                new InvalidNameException('Column named "id" does not exist both tables'),
+                new InvalidColumnException('Column named "id" does not exist both tables'),
             ],
 
             [

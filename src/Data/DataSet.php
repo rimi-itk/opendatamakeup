@@ -10,7 +10,9 @@
 
 namespace App\Data;
 
-use App\Data\Exception\InvalidNameException;
+use App\Data\Exception\InvalidColumnException;
+use App\Data\Exception\InvalidTableNameException;
+use App\Entity\DataTransform;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -36,6 +38,12 @@ class DataSet
      */
     private $table;
 
+    /** @var DataTransform */
+    private $transform;
+
+    // @TODO Move table name prefix ("__data_set") to configuration and probably the DataSetManager.
+    private $tableNamePrefix = '__data_set_';
+
     /**
      * Table constructor.
      *
@@ -59,6 +67,19 @@ class DataSet
         }
     }
 
+    public function getTransform(): ?DataTransform
+    {
+        return $this->transform;
+    }
+
+    public function setTransform(DataTransform $transform)
+    {
+        $this->transform = $transform;
+
+        return $this;
+    }
+
+    // @TODO Generating names should be handled by the data set mananger.
     public function getNewName()
     {
         $name = $this->name;
@@ -120,6 +141,20 @@ class DataSet
         return $this->loadData($items);
     }
 
+    public function isDataSetTableName(string $name)
+    {
+        return \strlen($name) > \strlen($this->tableNamePrefix) && 0 === strpos($name, $this->tableNamePrefix);
+    }
+
+    public function getDataSetName(string $tableName)
+    {
+        if (!$this->isDataSetTableName($tableName)) {
+            throw new InvalidTableNameException(sprintf('Invalid data set table name: %s', $tableName));
+        }
+
+        return preg_replace('@^'.preg_quote($this->tableNamePrefix, '@').'@', '', $tableName);
+    }
+
     public function buildFromSQL(string $sql): self
     {
         $statement = $this->prepare($sql);
@@ -154,7 +189,7 @@ class DataSet
     public function getQuotedColumnName(string $name)
     {
         if (!$this->getColumns()->containsKey($name)) {
-            throw new InvalidNameException($name);
+            throw new InvalidColumnException($name);
         }
 
         return $this->quoteName($name);
@@ -175,31 +210,19 @@ class DataSet
         return $columns;
     }
 
-    private $rowsStatement;
-
-    public function rows()
+    public function rows(): ?\Generator
     {
-        if (null === $this->rowsStatement) {
-            $statement = sprintf('SELECT * FROM %s;', $this->getQuotedTableName());
-            $this->rowsStatement = $this->prepare($statement);
-            $this->rowsStatement->execute();
-        }
+        $statement = sprintf('SELECT * FROM %s;', $this->getQuotedTableName());
+        $rowsStatement = $this->prepare($statement);
+        $rowsStatement->execute();
         $columns = $this->getColumns();
 
-        while ($row = $this->rowsStatement->fetch()) {
+        while ($row = $rowsStatement->fetch()) {
             array_walk($row, function (&$value, $name) use ($columns) {
-                if (!isset($columns[$name])) {
-                    var_export([
-                        'name' => $name,
-                        'columns' => $columns,
-                        $columns[$name],
-                    ]);
-                }
                 $value = $columns[$name]->getType()->convertToPHPValue($value, $this->platform);
             });
             yield $row;
         }
-        $this->rowsStatement = null;
     }
 
     public function insertRows(array $rows)
@@ -279,7 +302,7 @@ class DataSet
     public function join(string $name, self $that)
     {
         if (!\array_key_exists($name, $this->columns) || !\array_key_exists($name, $that->columns)) {
-            throw new InvalidNameException(sprintf('Column named "%s" does not exist both tables', $name));
+            throw new InvalidColumnException(sprintf('Column named "%s" does not exist both tables', $name));
         }
 
         $thoseItems = array_column($that->items, null, $name);
@@ -339,7 +362,7 @@ class DataSet
      */
     private function buildTable(array $columns)
     {
-        $tableName = $this->quoteName('__data_set_'.$this->getName());
+        $tableName = $this->quoteName($this->tableNamePrefix.$this->getName());
         $table = new Table($tableName);
         foreach ($columns as $column) {
             $name = $column instanceof Column ? $column->getName() : $column['name'];

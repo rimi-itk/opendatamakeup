@@ -47,4 +47,12 @@ class DataSetManager
 
         return $dataSet;
     }
+
+    public function createDataSetFromTable(string $name)
+    {
+        $dataSet = new DataSet($name, $this->entityManager->getConnection());
+        $dataSet->buildFromTable();
+
+        return $dataSet;
+    }
 }

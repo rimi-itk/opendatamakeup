@@ -52,6 +52,23 @@ class DataWrangler
      */
     private $transforms;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @Gedmo\Versioned
+     */
+    private $enabled;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Versioned
+     */
+    private $ttl;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastRunAt;
+
     public function __construct()
     {
         $this->dataSources = new ArrayCollection();
@@ -128,6 +145,42 @@ class DataWrangler
                 $transform->setDataWrangler(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getTtl(): ?int
+    {
+        return $this->ttl;
+    }
+
+    public function setTtl($ttl): self
+    {
+        $this->ttl = $ttl;
+
+        return $this;
+    }
+
+    public function getLastRunAt(): ?\DateTime
+    {
+        return $this->lastRunAt;
+    }
+
+    public function setLastRunAt(\DateTime $lastRunAt = null): self
+    {
+        $this->lastRunAt = $lastRunAt;
 
         return $this;
     }

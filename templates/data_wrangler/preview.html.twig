@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title 'Data wrangler preview'|trans %}
+
+{% macro navigation(variables) %}
+    {% set data_sets = variables.data_sets %}
+    {% set loop = variables.loop %}
+
+    <div class="row">
+        <div class="col-sm">
+
+            <nav aria-label="data set navigation">
+                <ul class="pagination">
+                    {% if loop.first %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#data-set-{{ 0 }}" tabindex="-1" aria-disabled="true" aria-label="{{ 'Previous'|trans }}">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="#data-set-{{ loop.index0-1 }}" aria-label="{{ 'Previous'|trans }}">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in 0..loop.length-1 %}
+                        {% if i == loop.parent.loop.index0 %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="#data-set-{{ i }}">{{ i }} <span class="sr-only">{{ '(current)'|trans }}</span></a>
+                            </li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="#data-set-{{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if loop.last %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#data-set-{{ loop.index0+1 }}" tabindex="-1" aria-disabled="true" aria-label="{{ 'Next'|trans }}">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="#data-set-{{ loop.index0+1 }}" aria-label="{{ 'Next'|trans }}">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <div class="col-sm">
+            <div class="float-right">
+                <a class="btn btn-secondary" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({steps: loop.index})) }}">{{ 'Run to this step'|trans }}</a>
+                <a class="btn btn-secondary" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({steps: null})) }}">{{ 'Run all steps'|trans }}</a>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1>{{ data_wrangler.name }}</h1>
+
+        {% for data_set in data_sets %}
+        <section id="data-set-{{ loop.index0 }}">
+            {{ _self.navigation(_context) }}
+
+            <h2>{{ data_set.transform.name|default('👻') }}</h2>
+
+            <table class="table">
+            {% for row in data_set.rows %}
+                {% if loop.first %}
+                    <tr>
+                        {% for column in data_set.columns %}
+                            <th>{{ column.name }}:{{ column.type }}</th>
+                        {%  endfor %}
+                    </tr>
+                {% endif %}
+                <tr>
+                    {% for value in row %}
+                        <td>{{ value is iterable ? value|json_encode : value }}</td>
+                    {%  endfor %}
+                </tr>
+            {% endfor %}
+            </table>
+        </section>
+    {% endfor %}
+
+    </div>
+{% endblock %}

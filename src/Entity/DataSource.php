@@ -27,9 +27,9 @@ class DataSource
     use BlameableEntity;
     use TimestampableEntity;
 
-    public const TYPE_CSV = 'csv';
-    public const TYPE_JSON = 'json';
-//    public const TYPE_XML = 'xml';
+    public const FORMAT_CSV = 'csv';
+    public const FORMAT_JSON = 'json';
+//    public const FORMAT_XML = 'xml';
 
     /**
      * @ORM\Id
@@ -59,7 +59,12 @@ class DataSource
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
      */
-    private $type;
+    private $format;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $jsonRoot;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\DataWrangler", mappedBy="dataSource")
@@ -112,17 +117,29 @@ class DataSource
         return $this;
     }
 
-    public function getType(): ?string
+    public function getFormat(): ?string
     {
-        return $this->type;
+        return $this->format;
     }
 
-    public function setType(string $type): self
+    public function setFormat(string $format): self
     {
-        if (!\in_array($type, [static::TYPE_CSV, static::TYPE_JSON], true)) {
-            throw new \InvalidArgumentException(sprintf('Invalid type: %s', $type));
+        if (!\in_array($format, [static::FORMAT_CSV, static::FORMAT_JSON], true)) {
+            throw new \InvalidArgumentException(sprintf('Invalid type: %s', $format));
         }
-        $this->type = $type;
+        $this->format = $format;
+
+        return $this;
+    }
+
+    public function getJsonRoot(): ?string
+    {
+        return $this->jsonRoot;
+    }
+
+    public function setJsonRoot(string $jsonRoot = null): self
+    {
+        $this->jsonRoot = $jsonRoot;
 
         return $this;
     }

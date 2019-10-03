@@ -12,6 +12,7 @@ namespace App\Tests;
 
 use App\Data\DataSetManager;
 use App\Data\DataSource\DataSourceManager;
+use App\Data\DataWranglerManager;
 use App\Transformer\TransformerManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -42,6 +43,11 @@ class ContainerTestCase extends KernelTestCase
         }
 
         return $this->services[$service];
+    }
+
+    protected function dataWranglerManager(): DataWranglerManager
+    {
+        return $this->get(DataWranglerManager::class);
     }
 
     protected function dataSourceManager(): DataSourceManager

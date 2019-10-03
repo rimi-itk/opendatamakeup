@@ -21,6 +21,19 @@ services:
       - MYSQL_DATABASE=db
       #- ENCRYPT=1 # Uncomment to enable database encryptionn.
 
+  mariadb_test:
+    image: itkdev/mariadb:latest
+    networks:
+      - app
+    ports:
+      - '3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=db
+      - MYSQL_PASSWORD=db
+      - MYSQL_DATABASE=db
+      #- ENCRYPT=1 # Uncomment to enable database encryptionn.
+
   phpfpm:
     image: itkdev/php7.3-fpm:latest
     networks:

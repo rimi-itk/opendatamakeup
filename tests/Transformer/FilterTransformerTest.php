@@ -21,7 +21,7 @@ class FilterTransformerTest extends AbstractTransformerTest
         return [
             [
                 [
-                    'key' => 'name',
+                    'column' => 'name',
                     'match' => 'M',
                     'partial' => true,
                 ],
@@ -44,10 +44,10 @@ CSV
 
             [
                 [
-                    'key' => 'name',
+                    'column' => 'name',
                     'match' => 'M',
                     'partial' => true,
-                    'ignore_case' => true,
+                    'ignoreCase' => true,
                 ],
                 $this->buildFromCSV(
                     $this->getTableName(),

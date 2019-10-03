@@ -1,12 +1,19 @@
-input: test-000.in.csv
+# DataWrangler
+
+dataSources:
+    -
+        url: test-000.in.csv
+        format: csv
 
 transforms:
     -
-        name: replace
-        configuration:
-            names: ['birthday']
+        transformer: App\Transformer\ReplaceTransformer
+        transformerArguments:
+            columns: ['birthday']
             search: '/([0-9]{2})-([0-9]{2})-([0-9]{2})/'
             replace: '19\3-\2-\1'
             regexp: true
 
-expected: test-001.out.csv
+expected:
+    url: test-001.out.csv
+    format: csv

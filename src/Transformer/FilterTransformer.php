@@ -16,14 +16,14 @@ use App\Data\DataSet;
 
 /**
  * @Transform(
- *     id="filter",
+ *     alias="filter",
  *     name="Filter",
  *     description="Filter",
  *     options={
  *         "column": @Option(type="column"),
  *         "match": @Option(type="string"),
  *         "partial": @Option(type="bool", required=false, default=false),
- *         "ignoreCase": @Option(type="bool", required=false, default=false, name="ignore_case"),
+ *         "ignoreCase": @Option(type="bool", required=false, default=false),
  *         "regexp": @Option(type="bool", required=false, default=false),
  *         "include": @Option(type="bool", required=false, default=true, description="If not set, items that match will be removed rather that kept"),
  *     }
@@ -47,7 +47,7 @@ class FilterTransformer extends AbstractTransformer
     private $partial;
 
     /**
-     * @Configuration(type="bool", required=false, default=false, name="ignore_case")
+     * @var bool
      */
     private $ignoreCase;
 
@@ -84,5 +84,10 @@ class FilterTransformer extends AbstractTransformer
         }
 
         return $output;
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

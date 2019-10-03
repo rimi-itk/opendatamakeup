@@ -32,13 +32,13 @@ class DataSourceManager
 
     public function getData(DataSource $dataSource)
     {
-        [$url, $type] = [$dataSource->getUrl(), $dataSource->getType()];
+        [$url, $type] = [$dataSource->getUrl(), $dataSource->getFormat()];
         $content = null;
         $response = $this->client->request('GET', $url);
         $content = $response->getContent();
 
         switch ($type) {
-            case DataSource::TYPE_CSV:
+            case DataSource::FORMAT_CSV:
                 $lines = explode(PHP_EOL, $content);
                 // Ignore empty lines.
                 $lines = array_filter(array_map('trim', $lines));
@@ -52,7 +52,7 @@ class DataSourceManager
                     return array_combine($headers, $values);
                 }, $rows);
                 break;
-            case DataSource::TYPE_JSON:
+            case DataSource::FORMAT_JSON:
                 return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
             default:
                 throw new \InvalidArgumentException(sprintf('Invalid data source type: %s', $type));

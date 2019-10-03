@@ -38,6 +38,7 @@ class AppCompilerPass implements CompilerPassInterface
             $annotation = $reader->getClassAnnotation(new \ReflectionClass($class), Transform::class);
             if (null !== $annotation) {
                 $metadata = $annotation->asArray();
+                $metadata['id'] = $class;
             }
         }
         unset($metadata);

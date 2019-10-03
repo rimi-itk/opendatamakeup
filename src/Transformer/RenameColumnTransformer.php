@@ -12,7 +12,7 @@ namespace App\Transformer;
 
 use App\Annotation\Transform;
 use App\Annotation\Transform\Option;
-use App\Data\Exception\InvalidNameException;
+use App\Data\Exception\InvalidColumnException;
 use App\Data\DataSet;
 use App\Transformer\Exception\InvalidKeyException;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,7 +20,7 @@ use Doctrine\DBAL\Schema\Column;
 
 /**
  * @Transform(
- *     id="rename",
+ *     alias="rename",
  *     name="Rename",
  *     description="Renames a column",
  *     options={
@@ -46,7 +46,7 @@ class RenameColumnTransformer extends AbstractTransformer
      *
      * @return DataSet
      *
-     * @throws InvalidNameException
+     * @throws InvalidColumnException
      */
     public function transform(DataSet $input): DataSet
     {
@@ -81,5 +81,10 @@ class RenameColumnTransformer extends AbstractTransformer
         );
 
         return $output->buildFromSQL($sql);
+    }
+
+    public function transformColumns(array $columns): array
+    {
+        // TODO: Implement transformColumns() method.
     }
 }

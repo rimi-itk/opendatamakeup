@@ -1,8 +1,23 @@
 easy_admin:
-    entities:
-        User:
-            class: App\Entity\User
+    site_name: 'Open data makeup'
 
+    design:
+        menu:
+            - label: Data sources
+              entity: DataSource
+            - label: Data wranglers
+              entity: DataWrangler
+            - label: Users
+              entity: User
+              icon: user
+              permission: ROLE_USER_ADMIN
+            - label: Documentation
+              icon: books
+              children:
+                  - label: Transformers
+                    route: documentation_transformers
+
+    entities:
         DataSource:
            class: App\Entity\DataSource
 
@@ -10,29 +25,43 @@ easy_admin:
                fields:
                    - property: name
                    - property: url
-                   - property: type
+                   - property: format
 
            form:
                fields:
                    - property: name
                    - property: url
-                   - property: type
+                   - property: format
+                     type: choice
+                     type_options:
+                         choices:
+                             '': ''
+                             json: json
+                             csv: csv
+                             xml: xml
+                   - property: jsonRoot
 
         DataWrangler:
             class: App\Entity\DataWrangler
             controller: App\Controller\DataWranglerController
 
             list:
-                actions: [run]
+                actions: [preview]
 
                 fields:
                     - property: name
+                    - property: enabled
+                      type: boolean
+                    - property: ttl
+                    - property: lastRunAt
                     - property: dataSources
                     - property: transforms
 
             form:
                 fields:
                     - property: name
+                    - property: enabled
+                    - property: ttl
                     - property: dataSources
                     - property: transforms
                       type: collection
@@ -41,3 +70,6 @@ easy_admin:
                             allow_delete: true
                             allow_add: true
                             by_reference: false
+
+        User:
+            class: App\Entity\User

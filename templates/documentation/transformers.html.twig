@@ -1,0 +1,70 @@
+{% extends 'documentation/base.html.twig' %}
+
+{% block title %}Hello DocumentationController!{% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+        <h1>{{ 'Transformers'|trans }}</h1>
+
+        {%  for id, transformer in transformers %}
+        <section class="transformer">
+            <h2>{{ transformer.name }}</h2>
+
+            <table class="table" >
+                <tr>
+                    <th>{{ 'Id'|trans }}</th>
+                    <td>{{ id }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ 'Alias'|trans }}</th>
+                    <td>{{ transformer.alias }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ 'Description'|trans }}</th>
+                    <td>{{ transformer.description }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ 'Arguments'|trans }}</th>
+                    <td>
+                        <table class="table table-borderless table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for option in transformer.options %}
+                                    <tr>
+                                        <td>{{ option.name }}</td>
+                                        <td>{{ option.type }}</td>
+                                        <td>{{ option.required ? 'yes'|trans : 'no'|trans }}</td>
+                                        <td>{{ option.type == 'bool' ? (option.default ? 'true'|trans : 'false'|trans) : option.default }}
+                                        <td>{{ option.description }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                {#
+                {% if transformer.example|default(false) %}
+                    <tr>
+                        <th>{{ 'Example'|trans }}</th>
+                        <td><pre><code>{{ transformer.example }}</code></pre></td>
+                    </tr>
+                {% endif %}
+                #}
+            </table>
+
+        </section>
+        {% endfor %}
+    </div>
+{% endblock %}
