@@ -10,7 +10,10 @@
 
 namespace App\Transformer;
 
+use App\Data\Exception\InvalidTypeException;
 use App\Transformer\Exception\InvalidArgumentException;
+use App\Transformer\Exception\ValidationException;
+use DateTime;
 
 class TransformerManager
 {
@@ -63,5 +66,55 @@ class TransformerManager
         }
 
         return $transformer;
+    }
+
+    public function normalizeArguments(string $transformer, array $arguments)
+    {
+        $transformer = $this->getTransformer($transformer);
+        if (null !== $transformer) {
+            $metadata = $transformer->getMetadata();
+            $arguments = array_filter($arguments, static function ($name) use ($metadata) {
+                return \array_key_exists($name, $metadata['options']);
+            }, ARRAY_FILTER_USE_KEY);
+
+            foreach ($metadata['options'] as $name => $info) {
+                if (!\array_key_exists($name, $arguments)) {
+                    if ($info['required']) {
+                        throw new ValidationException(sprintf('Argument %s must be defined.', $name));
+                    }
+                    if ($info['default']) {
+                        $arguments[$name] = $info['default'];
+                    }
+                }
+                $arguments[$name] = static::convertToType($name, $info['type'], $arguments);
+            }
+        }
+
+        return $arguments;
+    }
+
+    private static function convertToType($name, $typeName, array $values)
+    {
+        if (isset($values[$name])) {
+            $value = $values[$name];
+            switch ($typeName) {
+                case 'bool':
+                    return (bool) $value;
+                case 'columns':
+                    return $value;
+                case 'date':
+                    return $value instanceof DateTime ? $value : new DateTime($value);
+                case 'int':
+                    return (int) $value;
+                case 'string':
+                    return (string) $value;
+                default:
+                    throw new InvalidTypeException(sprintf('Unknown type: %s', $typeName));
+            }
+
+            return $value;
+        }
+
+        return null;
     }
 }

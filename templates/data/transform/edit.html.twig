@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title 'Edit transform'|trans %}
+
+{% macro navigation(variables) %}
+{%  endmacro %}
+
+{% block body %}
+    <div class="container-fluid">
+        {% form_theme form 'bootstrap_4_horizontal_layout.html.twig' %}
+        {{ form(form) }}
+    </div>
+
+    {% set result = results|last %}
+
+    <table class="table data-set">
+            {% for row in result.rows %}
+                {% if loop.first %}
+                    <tr>
+                        {% for column in result.columns %}
+                            <th>{{ column.name }}:{{ column.type }}</th>
+                        {%  endfor %}
+                    </tr>
+                {% endif %}
+                <tr>
+                    {% for value in row %}
+                        <td>{{ value is iterable ? value|json_encode : value }}</td>
+                    {%  endfor %}
+                </tr>
+            {% endfor %}
+            </table>
+
+
+{% endblock %}

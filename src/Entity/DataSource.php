@@ -62,6 +62,17 @@ class DataSource
     private $format;
 
     /**
+     * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero
+     */
+    private $ttl;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastReadAt;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $jsonRoot;
@@ -128,6 +139,46 @@ class DataSource
             throw new \InvalidArgumentException(sprintf('Invalid type: %s', $format));
         }
         $this->format = $format;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTtl(): ?int
+    {
+        return $this->ttl;
+    }
+
+    /**
+     * @param mixed $ttl
+     *
+     * @return DataSource
+     */
+    public function setTtl(int $ttl): self
+    {
+        $this->ttl = $ttl;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastReadAt(): ?\DateTime
+    {
+        return $this->lastReadAt;
+    }
+
+    /**
+     * @param mixed $lastReadAt
+     *
+     * @return DataSource
+     */
+    public function setLastReadAt(\DateTime $lastReadAt = null): self
+    {
+        $this->lastReadAt = $lastReadAt;
 
         return $this;
     }

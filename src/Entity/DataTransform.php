@@ -56,6 +56,7 @@ class DataTransform
     /**
      * @ORM\Column(type="json")
      * @Assert\NotBlank
+     * @Assert\Valid
      * @Gedmo\Versioned
      */
     private $transformerArguments = [];

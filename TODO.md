@@ -6,6 +6,11 @@
 * Edit single transform
 * Do we need (to implement) AbstractTransformer::transformColumns so we cat check transformed columns with processing actual data?
 
+## Data sources
+
+* Multiple data sources
+* Combine data sources
+
 ## Data targets
 
 * API

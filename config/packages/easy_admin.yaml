@@ -2,6 +2,14 @@ easy_admin:
     site_name: 'Open data makeup'
 
     design:
+        assets:
+            # css:
+            #     - build/easy_admin.css
+
+            js:
+                - build/runtime.js
+                - build/easy_admin.js
+
         menu:
             - label: Data sources
               entity: DataSource
@@ -19,27 +27,30 @@ easy_admin:
 
     entities:
         DataSource:
-           class: App\Entity\DataSource
+            class: App\Entity\DataSource
 
-           list:
-               fields:
-                   - property: name
-                   - property: url
-                   - property: format
+            list:
+                fields:
+                    - property: name
+                    - property: url
+                    - property: format
+                    - property: lastReadAt
+                    - property: ttl
 
-           form:
-               fields:
-                   - property: name
-                   - property: url
-                   - property: format
-                     type: choice
-                     type_options:
-                         choices:
-                             '': ''
-                             json: json
-                             csv: csv
-                             xml: xml
-                   - property: jsonRoot
+            form:
+                fields:
+                    - property: name
+                    - property: url
+                    - property: format
+                      type: choice
+                      type_options:
+                          choices:
+                              '': ''
+                              json: json
+                              csv: csv
+                              xml: xml
+                    - property: jsonRoot
+                    - property: ttl
 
         DataWrangler:
             class: App\Entity\DataWrangler
@@ -52,8 +63,8 @@ easy_admin:
                     - property: name
                     - property: enabled
                       type: boolean
-                    - property: ttl
                     - property: lastRunAt
+                    - property: ttl
                     - property: dataSources
                     - property: transforms
 

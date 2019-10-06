@@ -10,14 +10,14 @@
 
 namespace App\Form\Type;
 
+use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CodeEditorType;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
-class TransformerArgumentsType extends TextareaType implements DataTransformerInterface
+class TransformerArgumentsType extends CodeEditorType implements DataTransformerInterface
 {
     public function transform($value)
     {
@@ -39,10 +39,12 @@ class TransformerArgumentsType extends TextareaType implements DataTransformerIn
         $builder->addViewTransformer($this);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
+        parent::configureOptions($resolver);
         $resolver->setDefaults([
             'transformer_name' => null,
+            'language' => 'yaml',
         ]);
     }
 }

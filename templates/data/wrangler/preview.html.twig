@@ -3,7 +3,7 @@
 {% block title 'Data wrangler preview'|trans %}
 
 {% macro navigation(variables) %}
-    {% set data_sets = variables.data_sets %}
+    {% set results = variables.results %}
     {% set loop = variables.loop %}
 
     <div class="row">
@@ -64,28 +64,36 @@
     <div class="container-fluid">
         <h1>{{ data_wrangler.name }}</h1>
 
-        {% for data_set in data_sets %}
+        {% for result in results %}
         <section id="data-set-{{ loop.index0 }}">
             {{ _self.navigation(_context) }}
 
-            <h2>{{ data_set.transform.name|default('👻') }}</h2>
-
-            <table class="table">
-            {% for row in data_set.rows %}
-                {% if loop.first %}
-                    <tr>
-                        {% for column in data_set.columns %}
-                            <th>{{ column.name }}:{{ column.type }}</th>
-                        {%  endfor %}
-                    </tr>
+            <h2>{{ result.transform.name|default('👻') }}
+                {% if result.transform.id|default(false) %}
+                    <a class="btn btn-secondary" href="{{ path('data_transform_edit', {id: result.transform.id}) }}">{{ 'Edit'|trans }}</a>
                 {% endif %}
-                <tr>
-                    {% for value in row %}
-                        <td>{{ value is iterable ? value|json_encode : value }}</td>
-                    {%  endfor %}
-                </tr>
-            {% endfor %}
-            </table>
+            </h2>
+
+            {% if result.message|default(false) %}
+                <div class="alert alert-danger">{{ result.message}}: {{ result.previous.message}}</div>
+            {% else %}
+                <table class="table">
+                    {% for row in result.rows %}
+                        {% if loop.first %}
+                            <tr>
+                                {% for column in result.columns %}
+                                    <th>{{ column.name }}:{{ column.type }}</th>
+                                {%  endfor %}
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value is iterable ? value|json_encode : value }}</td>
+                            {%  endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
         </section>
     {% endfor %}
 

@@ -11,7 +11,9 @@
 namespace App\Data;
 
 use App\Data\DataSource\DataSourceManager;
+use App\Data\Exception\TransformRuntimeException;
 use App\Entity\DataWrangler;
+use App\Transformer\Exception\AbstractTransformerException;
 use App\Transformer\TransformerManager;
 
 class DataWranglerManager
@@ -61,12 +63,22 @@ class DataWranglerManager
             if ($index >= $steps - 1) {
                 break;
             }
-            $transformer = $this->transformerManager->getTransformer(
-                $transform->getTransformer(),
-                $transform->getTransformerArguments()
-            );
-            $dataSet = $transformer->transform($dataSet)->setTransform($transform);
-            $results[] = $dataSet;
+            try {
+                $transformer = $this->transformerManager->getTransformer(
+                    $transform->getTransformer(),
+                    $transform->getTransformerArguments()
+                );
+                $dataSet = $transformer->transform($dataSet)->setTransform($transform);
+                $results[] = $dataSet;
+            } catch (AbstractTransformerException $exception) {
+                if ($options['return_exceptions'] ?? false) {
+                    $results[] = (new TransformRuntimeException('Data wrangler run failed', $exception->getCode(), $exception))
+                        ->setTransform($transform);
+                    break;
+                } else {
+                    throw $exception;
+                }
+            }
         }
 
         return $results;

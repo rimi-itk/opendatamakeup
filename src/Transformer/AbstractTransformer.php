@@ -114,7 +114,7 @@ abstract class AbstractTransformer
 
     public function getOptions()
     {
-        return $this->metadata->getOptions();
+        return $this->metadata['options'] ?? [];
     }
 
     protected function validateAndApplyOptions()

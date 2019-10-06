@@ -45,7 +45,7 @@ class DataWranglerController extends AdminController
      */
     public function show(DataWrangler $dataWrangler)
     {
-        return $this->render('data_wrangler/show.html.twig', [
+        return $this->render('data/wrangler/show.html.twig', [
             'data_wrangler' => $dataWrangler,
         ]);
     }
@@ -59,12 +59,13 @@ class DataWranglerController extends AdminController
      */
     public function preview(Request $request, DataWrangler $dataWrangler)
     {
-        $dataSets = $this->dataWranglerManager->run($dataWrangler, [
+        $results = $this->dataWranglerManager->run($dataWrangler, [
             'steps' => $request->query->getInt('steps', PHP_INT_MAX),
+            'return_exceptions' => true,
         ]);
 
-        return $this->render('data_wrangler/preview.html.twig', [
-            'data_sets' => $dataSets,
+        return $this->render('data/wrangler/preview.html.twig', [
+            'results' => $results,
             'data_wrangler' => $dataWrangler,
         ]);
     }

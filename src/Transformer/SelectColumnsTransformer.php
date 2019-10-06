@@ -22,8 +22,8 @@ use Doctrine\DBAL\Schema\Column;
  *     name="Select columns",
  *     description="Selects (or excludes) one or more columns",
  *     options={
- *         "columns": @Option(type="columns"),
- *         "include": @Option(type="bool", required=false, default=true)
+ *         "columns": @Option(type="columns", description="The columns."),
+ *         "include": @Option(type="bool", required=false, default=true, description="If set, columns are included. Otherwise they are excluded.")
  *     }
  * )
  */

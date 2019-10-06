@@ -22,6 +22,14 @@ use Doctrine\DBAL\Types\Type;
 
 class DataSet
 {
+    public static $columnTypes = [
+        'int' => Type::INTEGER,
+        'float' => Type::FLOAT,
+        'datetime' => Type::DATETIME,
+        'date' => Type::DATE,
+        'json' => Type::JSON,
+    ];
+
     /** @var Connection */
     private $connection;
 

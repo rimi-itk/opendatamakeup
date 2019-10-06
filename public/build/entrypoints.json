@@ -1,12 +1,12 @@
 {
   "entrypoints": {
-    "app": {
+    "easy_admin": {
       "js": [
-        "/build/runtime.4f911793.js",
-        "/build/app.81f70017.js"
+        "/build/runtime.js",
+        "/build/easy_admin.js"
       ],
       "css": [
-        "/build/app.567124b8.css"
+        "/build/easy_admin.css"
       ]
     }
   }

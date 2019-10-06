@@ -24,7 +24,7 @@ use Doctrine\DBAL\Schema\Column;
  *     name="Rename",
  *     description="Renames a column",
  *     options={
- *         "from": @Option(type="string"),
+ *         "from": @Option(type="column"),
  *         "to": @Option(type="string")
  *     }
  * )
@@ -51,11 +51,11 @@ class RenameColumnTransformer extends AbstractTransformer
     public function transform(DataSet $input): DataSet
     {
         $columns = $input->getColumns();
-        if (\array_key_exists($this->from, $columns)) {
-            throw new InvalidKeyException(sprintf('Name "%s" does not exist', $this->from));
+        if (!$columns->containsKey($this->from)) {
+            throw new InvalidKeyException(sprintf('Column "%s" does not exist', $this->from));
         }
-        if (\array_key_exists($this->to, $columns)) {
-            throw new InvalidKeyException(sprintf('Name "%s" already exists', $this->to));
+        if ($columns->containsKey($this->to)) {
+            throw new InvalidKeyException(sprintf('Column "%s" already exists', $this->to));
         }
 
         $newColumns = new ArrayCollection();
