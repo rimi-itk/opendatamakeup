@@ -100,6 +100,7 @@ class TransformerManager
             switch ($typeName) {
                 case 'bool':
                     return (bool) $value;
+                case 'column':
                 case 'columns':
                     return $value;
                 case 'date':
