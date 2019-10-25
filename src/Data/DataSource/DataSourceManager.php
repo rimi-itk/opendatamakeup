@@ -11,6 +11,7 @@
 namespace App\Data\DataSource;
 
 use App\Entity\DataSource;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataSourceManager
@@ -18,9 +19,13 @@ class DataSourceManager
     /** @var HttpClientInterface */
     private $client;
 
-    public function __construct(HttpClientInterface $client)
+    /** @var PropertyAccessorInterface */
+    private $propertyAccessor;
+
+    public function __construct(HttpClientInterface $client, PropertyAccessorInterface $propertyAccessor)
     {
         $this->client = $client;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     public function setClient(HttpClientInterface $client): self
@@ -53,7 +58,17 @@ class DataSourceManager
                 }, $rows);
                 break;
             case DataSource::FORMAT_JSON:
-                return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+                $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+
+                $root = $dataSource->getJsonRoot();
+                if (null !== $root) {
+                    $propertyPath = (static function ($spec) {
+                        return '['.implode('][', preg_split('/\./', $spec)).']';
+                    })($root);
+                    $data = $this->propertyAccessor->getValue($data, $propertyPath);
+                }
+
+                return $data;
             default:
                 throw new \InvalidArgumentException(sprintf('Invalid data source type: %s', $type));
         }

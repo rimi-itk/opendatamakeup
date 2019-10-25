@@ -78,7 +78,8 @@ class FilterTransformer extends AbstractTransformer
                 }
             }
 
-            if ($isMatch && $this->include) {
+            if (($isMatch && $this->include)
+                || (!$isMatch && !$this->include)) {
                 $output->insertRow($row);
             }
         }

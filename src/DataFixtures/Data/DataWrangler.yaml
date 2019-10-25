@@ -1,5 +1,6 @@
 -
     id: '00000000-0000-0000-0000-000000000000'
+    enabled: false
     name: Test
     dataSources:
         - '@data_source:test'
@@ -16,6 +17,7 @@
 
 -
     id: '00000000-0000-0000-0000-111111111111'
+    enabled: true
     name: Another test
     dataSources:
         - '@data_source:test'
@@ -50,3 +52,46 @@
               name: half
               type: float
               expression: id/2
+
+-
+    id: 'b3eeb0ff-c8a8-4824-99d6-e0a3747c8b0d'
+    enabled: true
+    name: Realtids trafikdata (sic!)
+    dataSources:
+        - '@odaa:b3eeb0ff-c8a8-4824-99d6-e0a3747c8b0d'
+    transforms:
+        - name: Remove columns
+          transformer: App\Transformer\SelectColumnsTransformer
+          transformerArguments:
+              columns: ['_id', 'REPORT_ID']
+              include: false
+
+        - name: Select columns
+          transformer: App\Transformer\SelectColumnsTransformer
+          transformerArguments:
+              columns: ['TIMESTAMP', 'vehicleCount']
+
+        - name: Filter out non-zero values
+          transformer: App\Transformer\FilterTransformer
+          transformerArguments:
+              column: vehicleCount
+              match: '0'
+              include: false
+
+        - name: Convert
+          transformer: App\Transformer\ChangeColumnTypeTransformer
+          transformerArguments:
+              columns: ['TIMESTAMP']
+              type: 'datetime'
+
+        - name: Rename
+          transformer: App\Transformer\RenameColumnTransformer
+          transformerArguments:
+              from: 'TIMESTAMP'
+              to: 't'
+
+        - name: Rename
+          transformer: App\Transformer\RenameColumnTransformer
+          transformerArguments:
+              from: 'vehicleCount'
+              to: 'count'

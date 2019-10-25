@@ -88,7 +88,14 @@
                         {% endif %}
                         <tr>
                             {% for value in row %}
-                                <td>{{ value is iterable ? value|json_encode : value }}</td>
+                                <td>
+                                    {% if value is iterable %}
+                                        {{ value|json_encode }}
+                                    {% elseif value.timestamp is defined %}
+                                        {{ value|date }}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
                             {%  endfor %}
                         </tr>
                     {% endfor %}
