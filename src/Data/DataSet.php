@@ -218,6 +218,11 @@ class DataSet
         return $columns;
     }
 
+    public function getRows(): array
+    {
+        return iterator_to_array($this->rows());
+    }
+
     public function rows(): ?\Generator
     {
         $statement = sprintf('SELECT * FROM %s;', $this->getQuotedTableName());

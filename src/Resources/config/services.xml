@@ -13,6 +13,10 @@
             <argument key="$transformers" />
         </service>
 
+        <service id="App\Data\DataTarget\DataTargetManager" class="App\Data\DataTarget\DataTargetManager">
+            <argument key="$dataTargets" />
+        </service>
+
         <service id="App\Data\Converter\Converter" class="App\Data\Converter\Converter" public="true">
             <argument type="service" id="serializer"/>
         </service>

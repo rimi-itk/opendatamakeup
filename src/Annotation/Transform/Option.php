@@ -16,18 +16,23 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @see https://www.doctrine-project.org/projects/doctrine-annotations/en/1.7/custom.html
  *
  * @Annotation
- * @Target("ANNOTATION")
+ * @Target({"ANNOTATION", "PROPERTY"})
  */
 class Option implements \JsonSerializable
 {
     /**
      * @Required
      *
-     * @Enum({"column", "columns", "string", "map", "bool", "int", "type"})
+     * @Enum({"column", "columns", "string", "map", "bool", "int", "type", "choice"})
      *
      * @var string
      */
     public $type;
+
+    /**
+     * @var array
+     */
+    public $choices;
 
     /**
      * Name to use in stead of property name.

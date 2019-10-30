@@ -69,10 +69,16 @@ class DataWrangler
      */
     private $lastRunAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\DataTarget", mappedBy="dataWrangler", cascade={"persist"}, orphanRemoval=true)
+     */
+    private $dataTargets;
+
     public function __construct()
     {
         $this->dataSources = new ArrayCollection();
         $this->transforms = new ArrayCollection();
+        $this->dataTargets = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -181,6 +187,37 @@ class DataWrangler
     public function setLastRunAt(\DateTime $lastRunAt = null): self
     {
         $this->lastRunAt = $lastRunAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|DataTarget[]
+     */
+    public function getDataTargets(): Collection
+    {
+        return $this->dataTargets;
+    }
+
+    public function addDataTarget(DataTarget $dataTarget): self
+    {
+        if (!$this->dataTargets->contains($dataTarget)) {
+            $this->dataTargets[] = $dataTarget;
+            $dataTarget->setDataWrangler($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDataTarget(DataTarget $dataTarget): self
+    {
+        if ($this->dataTargets->contains($dataTarget)) {
+            $this->dataTargets->removeElement($dataTarget);
+            // set the owning side to null (unless already changed)
+            if ($dataTarget->getDataWrangler() === $this) {
+                $dataTarget->setDataWrangler(null);
+            }
+        }
 
         return $this;
     }

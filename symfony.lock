@@ -166,6 +166,9 @@
     "itk-dev/database-bundle": {
         "version": "1.2.0"
     },
+    "itk-dev/php-ckan-api-client": {
+        "version": "dev-master"
+    },
     "itk-dev/user-management-bundle": {
         "version": "dev-master"
     },
@@ -613,18 +616,6 @@
     },
     "symfony/yaml": {
         "version": "v4.3.4"
-    },
-    "twig/extensions": {
-        "version": "1.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "a86723ee8d8b2f9437c8ce60a5546a1c267da5ed"
-        },
-        "files": [
-            "config/packages/twig_extensions.yaml"
-        ]
     },
     "twig/twig": {
         "version": "v2.11.3"

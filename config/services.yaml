@@ -38,3 +38,10 @@ services:
     App\Transformer\:
         resource: '../src/Transformer/*Transformer*'
         tags: ['app.transformer']
+
+    App\Data\DataTarget\:
+        resource: '../src/Data/DataTarget/DataTarget*'
+        exclude: '../src/Data/DataTarget/DataTargetManager.php'
+        tags: ['app.data_target']
+        # DataTargets will be loaded dynamically and must therefore be public.
+        public: true

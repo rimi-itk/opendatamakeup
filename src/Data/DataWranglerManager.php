@@ -11,13 +11,20 @@
 namespace App\Data;
 
 use App\Data\DataSource\DataSourceManager;
+use App\Data\DataTarget\DataTargetManager;
 use App\Data\Exception\TransformRuntimeException;
 use App\Entity\DataWrangler;
+use App\Repository\DataWranglerRepository;
+use App\Traits\LogTrait;
 use App\Transformer\Exception\AbstractTransformerException;
 use App\Transformer\TransformerManager;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 
 class DataWranglerManager
 {
+    use LogTrait;
+
     /** @var DataSourceManager */
     protected $dataSourceManager;
 
@@ -27,15 +34,32 @@ class DataWranglerManager
     /** @var TransformerManager */
     protected $transformerManager;
 
-    public function __construct(DataSourceManager $dataSourceManager, DataSetManager $dataSetManager, TransformerManager $transformerManager)
+    /** @var DataTargetManager */
+    protected $dataTargetManager;
+
+    /** @var DataWranglerRepository */
+    protected $repository;
+
+    /** @var EntityManagerInterface */
+    protected $entityManager;
+
+    public function __construct(DataSourceManager $dataSourceManager, DataSetManager $dataSetManager, TransformerManager $transformerManager, DataTargetManager $dataTargetManager, DataWranglerRepository $repository, EntityManagerInterface $entityManager)
     {
         $this->dataSourceManager = $dataSourceManager;
         $this->dataSetManager = $dataSetManager;
         $this->transformerManager = $transformerManager;
+        $this->dataTargetManager = $dataTargetManager;
+        $this->repository = $repository;
+        $this->entityManager = $entityManager;
+    }
+
+    public function getDataWrangler(string $id): ?DataWrangler
+    {
+        return $this->repository->find($id);
     }
 
     /**
-     * @return DataSetManager
+     * @return DataSourceManager
      */
     public function getDataSourceManager(): DataSourceManager
     {
@@ -81,7 +105,30 @@ class DataWranglerManager
             }
         }
 
+        // Publish result only if running all transforms.
+        if ((!isset($options['steps']) || $dataWrangler->getTransforms()->count() === $options['steps'])
+            && $options['publish']) {
+            $result = end($results);
+            $this->publish($result, $dataWrangler->getDataTargets());
+        }
+
         return $results;
+    }
+
+    private function publish(DataSet $result, Collection $dataTargets)
+    {
+        $rows = $result->getRows();
+        $this->dataTargetManager->setLogger($this->logger);
+        foreach ($dataTargets as $dataTarget) {
+            $this->debug(sprintf('publish: %s', $dataTarget));
+            $target = $this->dataTargetManager->getDataTarget($dataTarget->getDataTarget(), $dataTarget->getDataTargetOptions());
+            $target->setLogger($this->logger);
+            $data = $dataTarget->getData() ?? [];
+            $target->publish($rows, $result->getColumns(), $data);
+            $dataTarget->setData($data);
+            $this->entityManager->persist($dataTarget);
+            $this->entityManager->flush();
+        }
     }
 
     /**
